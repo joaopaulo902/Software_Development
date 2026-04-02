@@ -1,4 +1,4 @@
-public class Evento {
+public class Evento {//to do: handle out of bounds cases
     //constantes
     public static int MAX_VALUE = 127;//define o maior valor dos campos
     public static int INSTRUMENT_CHANGE = 0;
@@ -11,18 +11,22 @@ public class Evento {
     {
         return comando;
     }
+
     public int get_nota()
     {
         return nota;
     }
+
     public int get_volume()
     {
         return volume;
     }
+
     public long get_duracao()
     {
         return duracao;
     }
+
     public void set_evento(int comando, int nota, int volume, long duracao)
     {
         set_comando(comando);

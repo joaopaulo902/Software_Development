@@ -4,10 +4,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Track;
 import java.util.List;
 
-public class Music_maker {
-    public static void main(String[] args) throws MidiUnavailableException, InvalidMidiDataException {
-
-    }
+public class Music_maker {//to do: handle exceptions
     //constantes
 
 
@@ -21,40 +18,74 @@ public class Music_maker {
     public void close()
     {
         is_open = false;
+        ready_it_is = false;
     }
+
     public void set_track(Track track)
     {
-        pronto =  track;
+        if (!is_open){
+            return;
+        }
+        faixa =  track;
     }
     public void add_line(List<Evento> es)//adicionar funcao de substituicao de canal
     {
+        if (!is_open){
+            return;
+        }
         int onde;
         onde = right_channel();
         if(onde == numero_linhas){
             return;
         }
+        if(!linhas[onde].in_use()){
+            linhas[onde].open(onde);
+        }
         linhas[onde].set_eventos(es);
     }
     public Track get_track()
     {
+        if (!is_open){
+            return null;
+        }
+        return faixa;
+    }
+
+    public boolean is_open()
+    {
+        return is_open;
+    }
+
+    public boolean is_ready() {
+        if (!is_open){
+            return false;
+        }
+        return ready_it_is;
+    }
+
+    public void ready(){
+        if (!is_open){
+            return;
+        }
         for(int i = 0; i < numero_linhas; i++){
             if(linhas[i] == null){
                 break;
             }
             if(linhas[i].in_use()){
                 for(MidiEvent ev : linhas[i].get_channel_events()){
-                    pronto.add(ev);
+                    faixa.add(ev);
                 }
             }
         }
-        return pronto;
+        ready_it_is = true;
     }
 
     //variaveis privadas
-    private Track pronto;
+    private Track faixa;
     private Canal[] linhas;
     private int numero_linhas;
     private boolean is_open = false;
+    private boolean ready_it_is;
 
     //metodos privados
     private int right_channel()

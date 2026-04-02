@@ -3,7 +3,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import java.util.List;
 
-public class Canal {
+public class Canal {//to do handle exceptions
     //constantes
     public static int ERRO_NO_CANAL = -1;
 
@@ -24,7 +24,10 @@ public class Canal {
     }
     public void set_eventos(List<Evento> eventos)
     {
-        if (eventos.size() == 0) {
+        if (!is_open){
+            return;
+        }
+        if (eventos.isEmpty()) {
             return;
         }
         for (Evento evento : eventos) {
