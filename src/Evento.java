@@ -1,10 +1,12 @@
 public class Evento {//to do: handle out of bounds cases
     //constantes
-    public static int MAX_VALUE = 127;//define o maior valor dos campos
-    public static int INSTRUMENT_CHANGE = 0;
-    public static int NOTE = 1;
-    public static int OUT_OF_BOUNDS = -1;
-    public static int NON_APLICABLE = 0;
+    public static final int MAX_VALUE = 127;//define o maior valor dos campos
+    public static final int INSTRUMENT_CHANGE = 0;
+    public static final int BPM_CHANGE = 1;
+    public static final int SILENCE = 2;
+    public static final int NOTE = 3;
+    public static final int OUT_OF_BOUNDS = -1;
+    public static final int NON_APLICABLE = 0;
 
     //metodos publicos
     public int get_comando()
@@ -78,11 +80,14 @@ public class Evento {//to do: handle out of bounds cases
         if (nota > MAX_VALUE) {
             return OUT_OF_BOUNDS;
         }
+        if (comando == SILENCE || comando == BPM_CHANGE) {
+            return NON_APLICABLE;
+        }
         return nota;
     }
     private int treat_volume(int volume)
     {
-        if (comando == INSTRUMENT_CHANGE) {
+        if (comando == INSTRUMENT_CHANGE || comando == BPM_CHANGE || comando == SILENCE) {
             return NON_APLICABLE;
         }
         if (volume > MAX_VALUE) {
@@ -94,6 +99,9 @@ public class Evento {//to do: handle out of bounds cases
     {
         if(comando == INSTRUMENT_CHANGE) {
             return NON_APLICABLE;
+        }
+        if(comando == BPM_CHANGE && duracao >= NON_APLICABLE) {
+            return duracao;
         }
         if (duracao > MAX_VALUE) {
             return OUT_OF_BOUNDS;

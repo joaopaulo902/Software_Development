@@ -1,29 +1,34 @@
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Track;
 import java.util.List;
 
 public class Canal {//to do handle exceptions
     //constantes
-    public static int ERRO_NO_CANAL = -1;
+    public static final int ERRO_NO_CANAL = -1;
 
     //metodos publicos
-    public void open(int id)
+    public void open(int id, Track track)
     {
+        faixa = track;
         channel_number = id;
         is_open = true;
         tick = 0;
-        prontos.clear();
+        clear_faixa();
     }
     public void close()
     {
         channel_number = ERRO_NO_CANAL;
-        int tick = 0;
+        tick = 0;
         is_open = false;
-        prontos.clear();
+        clear_faixa();
     }
     public void set_eventos(List<Evento> eventos)
     {
+        Event_treat tratador = new Event_treat();
+        tratador.start(faixa, channel_number);
+        tick = 0;
         if (!is_open){
             return;
         }
@@ -31,43 +36,29 @@ public class Canal {//to do handle exceptions
             return;
         }
         for (Evento evento : eventos) {
-            if(evento.get_comando() == Evento.INSTRUMENT_CHANGE){
-                MidiEvent ev = new MidiEvent(nova_mensagem(evento, ShortMessage.PROGRAM_CHANGE), tick);
-                prontos.add(ev);
-            }
-            else if(evento.get_comando() == Evento.INSTRUMENT_CHANGE){
-                MidiEvent ev = new MidiEvent(nova_mensagem(evento, ShortMessage.NOTE_ON), tick);
-                prontos.add(ev);
-                Evento aux_off_event =  new Evento();
-                aux_off_event.set_evento(Evento.OUT_OF_BOUNDS, evento.get_nota(), Evento.NON_APLICABLE, Evento.NON_APLICABLE);
-                tick = tick + evento.get_duracao();
-                MidiEvent ev1 = new MidiEvent(nova_mensagem(evento, ShortMessage.NOTE_OFF), tick);
-            }
+            tick += tratador.treatment(evento, tick);
         }
-    }
-    public List<MidiEvent> get_channel_events()
-    {
-        return prontos;
+        used = true;
     }
     public boolean in_use()
     {
-        return is_open;
+        return used;
+    }
+    public void clear_faixa()
+    {
+        for(int i = faixa.size() -  1; i >= 0; i--){
+            faixa.remove(faixa.get(i));
+        }
+        used = false;
     }
 
     //Variaveis privadas
     private int channel_number;
+    private Track faixa;
     private long tick = 0;
     private boolean is_open = false;
-    private List<MidiEvent> prontos;
+    private boolean used = false;
 
     //metodos privados
-    private ShortMessage nova_mensagem(Evento evento, int j_sound_comand){
-        ShortMessage msg = new ShortMessage();
-        try {
-            msg.setMessage(j_sound_comand, channel_number, evento.get_nota(), evento.get_volume());
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-        }
-        return msg;
-    }
+
 }

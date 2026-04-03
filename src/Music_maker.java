@@ -6,49 +6,48 @@ import java.util.List;
 
 public class Music_maker {//to do: handle exceptions
     //constantes
-
+    public static final int NUMBER_OF_TRACKS = 16;
 
     //metodos publicos
-    public void open(int numero_de_canais)
+    public void open(Track[] tracks)
     {
-        numero_linhas = numero_de_canais;
-        linhas = new Canal[numero_de_canais];
+        for(int i = 0; i < NUMBER_OF_TRACKS; i++){
+            faixas[i] = new Canal();
+            faixas[i].open(i, tracks[i]);
+        }
         is_open = true;
     }
+
     public void close()
     {
+        for (int i = 0; i < NUMBER_OF_TRACKS; i++){
+            faixas[i].close();
+        }
         is_open = false;
-        ready_it_is = false;
     }
 
-    public void set_track(Track track)
-    {
-        if (!is_open){
-            return;
-        }
-        faixa =  track;
-    }
     public void add_line(List<Evento> es)//adicionar funcao de substituicao de canal
     {
-        if (!is_open){
+        if(es.size() == 0){
             return;
         }
-        int onde;
-        onde = right_channel();
-        if(onde == numero_linhas){
+        int onde = right_channel();
+        if(onde==-1){
             return;
         }
-        if(!linhas[onde].in_use()){
-            linhas[onde].open(onde);
-        }
-        linhas[onde].set_eventos(es);
+        faixas[onde].set_eventos(es);
+        empty_it_is = false;
     }
-    public Track get_track()
+
+    public void delete_line(int id)
     {
-        if (!is_open){
-            return null;
+        faixas[id].clear_faixa();
+        for(int i = 0; i < NUMBER_OF_TRACKS; i++){
+            if(faixas[i].in_use()){
+                return;
+            }
         }
-        return faixa;
+        empty_it_is = true;
     }
 
     public boolean is_open()
@@ -56,50 +55,26 @@ public class Music_maker {//to do: handle exceptions
         return is_open;
     }
 
-    public boolean is_ready() {
-        if (!is_open){
-            return false;
-        }
-        return ready_it_is;
-    }
-
-    public void ready(){
-        if (!is_open){
-            return;
-        }
-        for(int i = 0; i < numero_linhas; i++){
-            if(linhas[i] == null){
-                break;
-            }
-            if(linhas[i].in_use()){
-                for(MidiEvent ev : linhas[i].get_channel_events()){
-                    faixa.add(ev);
-                }
-            }
-        }
-        ready_it_is = true;
+    public boolean is_empty()
+    {
+        return empty_it_is;
     }
 
     //variaveis privadas
-    private Track faixa;
-    private Canal[] linhas;
-    private int numero_linhas;
+    private Canal[] faixas;
     private boolean is_open = false;
-    private boolean ready_it_is;
+    private boolean empty_it_is = true;
 
     //metodos privados
     private int right_channel()
     {
         int i = 0;
-        while(linhas[i] == null && i < numero_linhas){
+        while (faixas[i].in_use() == true &&  i < NUMBER_OF_TRACKS){
             i++;
         }
-        if(i == numero_linhas){
-            i = 0;
-            while(linhas[i].in_use() && i < numero_linhas){
-                i++;
-            }
+        if (i < NUMBER_OF_TRACKS){
+            return i;
         }
-        return i;
+        return -1;
     }
 }
