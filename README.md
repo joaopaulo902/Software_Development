@@ -1,5 +1,5 @@
 # Software_Development
-## Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS 
+Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS 
 
 ### Requisitos do Projeto
  - **RF** - Requisito Funcional
