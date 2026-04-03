@@ -146,5 +146,4 @@ Public Class Parser {
 ```
 
 ### Croqui da Interface
-
 ![Croqui](MainScreen.png)
