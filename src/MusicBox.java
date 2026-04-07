@@ -1,13 +1,13 @@
 import javax.sound.midi.*;
 import java.util.List;
 
-public class Music_box {// to do: handle exceptions
+public class MusicBox {// to do: handle exceptions
     //constantes
     public static final int RESOLUTION = 24;
 
     //metodos publicos
     public void open(){
-        maker = new Music_maker();
+        maker = new MusicMaker();
         try {
             sequencer = MidiSystem.getSequencer();
         } catch (MidiUnavailableException e) {
@@ -41,7 +41,7 @@ public class Music_box {// to do: handle exceptions
         open_it_is = false;
     }
 
-    public void write_line(List<Evento> e){
+    public void write_line(List<MusicEvent> e){
         if(!open_it_is){
             return;
         }
@@ -77,7 +77,7 @@ public class Music_box {// to do: handle exceptions
 
 
     //variaveis privadas
-    private Music_maker maker;
+    private MusicMaker maker;
     private Sequencer sequencer;
     private Sequence sequence;
     private boolean open_it_is =  false;
