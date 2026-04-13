@@ -1,9 +1,9 @@
 # Software_Development
-Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS 
+Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS
 
 ### Requisitos do Projeto
- - **RF** - Requisito Funcional
- - **RNF** - Requisito Não Funcional
+- **RF** - Requisito Funcional
+- **RNF** - Requisito Não Funcional
 
 | # | Project Directives | Requirement type |
 | :-----:  | :----------------   | :--------- |
@@ -44,10 +44,10 @@ Este repositório documentará o processo de confecção do projeto geral da dis
 
 ### Bibliotecas/APIs inclusas (provisório)
 
- - javax.sound.midi; // uso do MIDI
- - java.util; // Uso de Classes padrão de projetos Java (eg: HashMap, Array, String, etc.)
- - javax.swing; //para a interface
- - java.io; // uso de arquivos para salvamentos
+- javax.sound.midi; // uso do MIDI
+- java.util; // Uso de Classes padrão de projetos Java (eg: HashMap, Array, String, etc.)
+- javax.swing; //para a interface
+- java.io; // uso de arquivos para salvamentos
 
 ### Estrutura dos dados (Protótipo)
 ```
