@@ -1,6 +1,6 @@
 import javax.sound.midi.*;
 
-public class Event_treat {
+public class EventTreat {
     //constantes publicas
 
 

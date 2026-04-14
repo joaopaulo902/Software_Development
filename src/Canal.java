@@ -1,6 +1,3 @@
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 import java.util.List;
 
@@ -26,7 +23,7 @@ public class Canal {//to do handle exceptions
     }
     public void set_eventos(List<Evento> eventos)
     {
-        Event_treat tratador = new Event_treat();
+        EventTreat tratador = new EventTreat();
         tratador.start(faixa, channel_number);
         tick = 0;
         if (!is_open){
