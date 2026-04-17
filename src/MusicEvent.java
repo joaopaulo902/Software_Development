@@ -4,9 +4,17 @@ public class MusicEvent {//to do: handle out of bounds cases
     public static final int INSTRUMENT_CHANGE = 0;
     public static final int BPM_CHANGE = 1;
     public static final int SILENCE = 2;
-    public static final int NOTE = 3;
+    public static final int NEW_NOTE = 3;
     public static final int OUT_OF_BOUNDS = -1;
     public static final int NON_APLICABLE = 0;
+
+    public static final double FULL_NOTE = 4;
+    public static final double HALF_NOTE = 2;
+    public static final double QUARTER_NOTE = 1;
+    public static final double EIGHTH_NOTE = 0.5;
+    public static final double SIXTEENTH_NOTE = 0.25;
+    public static final double THIRTY_SECOND_NOTE = 0.125;
+
 
     //metodos publicos
     public int get_command()
@@ -24,81 +32,97 @@ public class MusicEvent {//to do: handle out of bounds cases
         return volume;
     }
 
-    public long get_duration()
+    public int get_bpm()
+    {
+        return bpm;
+    }
+
+    public double get_duration()
     {
         return duration;
     }
 
-    public void set_music_event(int command, int note, int volume, long duration)
-    {
-        set_command(command);
-        set_note(note);
-        set_volume(volume);
-        set_duration(duration);
+    public void new_bpm(int _new){
+        if(!bpm_is_right(_new)){
+            return;
+        }
+        mark_all_unused();
+        command = BPM_CHANGE;
+        bpm = _new;
+    }
+
+    public void new_note(int new_tone, int new_volume, double new_duration){
+        if(!note_parameters_are_right(new_tone, new_volume, new_duration)){
+            return;
+        }
+        mark_all_unused();
+        command = NEW_NOTE;
+        note = new_tone;
+        volume = new_volume;
+        duration = new_duration;
+    }
+
+    public void new_silence(double new_duration){
+        if(!duration_is_right(new_duration)){
+            return;
+        }
+        mark_all_unused();
+        command = SILENCE;
+        duration = new_duration;
+    }
+
+    public void new_instrument(int new_instrument){
+        if(!instrument_is_right(new_instrument)){
+            return;
+        }
+        mark_all_unused();
+        command = INSTRUMENT_CHANGE;
+        instrument = new_instrument;
     }
 
     //dados privados
     private int command;
     private int note;
     private int volume;
-    public long duration;
+    private int bpm;
+    private int instrument;
+    private double duration;
+
 
     //metodos privados
-    private void set_command(int command)
-    {
-        this.command = treat_command(command);
+    private void mark_all_unused(){
+        command = OUT_OF_BOUNDS;
+        note = OUT_OF_BOUNDS;
+        volume = OUT_OF_BOUNDS;
+        bpm = OUT_OF_BOUNDS;
+        instrument = OUT_OF_BOUNDS;
+        duration = OUT_OF_BOUNDS;
     }
-    private void set_note(int note)
-    {
-        this.note = treat_note(note);
+    private boolean bpm_is_right(int bpm){
+        return true;
     }
-    private void set_volume(int volume)
-    {
-        this.volume = treat_volume(volume);
+    private boolean note_parameters_are_right(int note, int volume, double duration){
+        if(note > MAX_VALUE || note < 0){
+            return false;
+        }
+        if(volume > MAX_VALUE || volume < 0){
+            return false;
+        }
+        if(duration > FULL_NOTE || duration < THIRTY_SECOND_NOTE){
+            return false;
+        }
+        return true;
     }
-    private void set_duration(long duration)
-    {
-        this.duration = treat_duration(duration);
+    private boolean duration_is_right(double duration){
+        if(duration > FULL_NOTE || duration < THIRTY_SECOND_NOTE){
+            return false;
+        }
+        return true;
     }
-    private int treat_command(int command)
-    {
-        if (command > NOTE) {
-            return OUT_OF_BOUNDS;
+    private boolean instrument_is_right(int instrument){
+        if(instrument > MAX_VALUE || instrument < 0){
+            return false;
         }
-        return command;
+        return true;
     }
-    private int treat_note(int note)
-    {
-        if (note > MAX_VALUE) {
-            return OUT_OF_BOUNDS;
-        }
-        if (command == SILENCE || command == BPM_CHANGE) {
-            return NON_APLICABLE;
-        }
-        return note;
-    }
-    private int treat_volume(int volume)
-    {
-        if (command == INSTRUMENT_CHANGE || command == BPM_CHANGE || command == SILENCE) {
-            return NON_APLICABLE;
-        }
-        if (volume > MAX_VALUE) {
-            return OUT_OF_BOUNDS;
-        }
-        return volume;
-    }
-    private long treat_duration(long duration)
-    {
-        if(command == INSTRUMENT_CHANGE) {
-            return NON_APLICABLE;
-        }
-        if(command == BPM_CHANGE && duration >= NON_APLICABLE) {
-            return duration;
-        }
-        if (duration > MAX_VALUE) {
-            return OUT_OF_BOUNDS;
-        }
-        return duration;
-    }
-
 }

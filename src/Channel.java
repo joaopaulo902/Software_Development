@@ -33,7 +33,7 @@ public class Channel {//to do handle exceptions
             return;
         }
         for (MusicEvent evento : musicEventList) {
-            tick += tratador.treatment(evento, tick);
+            tick = tratador.treatment(evento, tick);
         }
         used = true;
     }

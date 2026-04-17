@@ -11,34 +11,34 @@ public class MusicEventHandler {
         started = true;
     }
 
-    public long treatment(MusicEvent musicEvent, long where){
+    public long treatment(MusicEvent musicEvent, long when){
         if (!started) {
             return 0;
         }
         switch (musicEvent.get_command()){
             case MusicEvent.INSTRUMENT_CHANGE:
-                treat_instrument(musicEvent, where);
-                return ZERO;
+                treat_instrument(musicEvent, when);
+                return when;
             case MusicEvent.BPM_CHANGE:
-                treat_bpm(musicEvent, where);
-                return ZERO;
+                treat_bpm(musicEvent, when);
+                return when;
             case MusicEvent.SILENCE:
-                return treat_silence(musicEvent.get_duration(), where);
-            case MusicEvent.NOTE:
+                return treat_silence(musicEvent.get_duration(), when);
+            case MusicEvent.NEW_NOTE:
 
-                return treat_nota(musicEvent, where);
+                return treat_nota(musicEvent, when);
             default:
-                return ZERO;
+                return when;
         }
     }
 
     //metodos privados
-    private void treat_instrument(MusicEvent musicEvent, long where){
-        track.add(new MidiEvent(nova_mensagem_curta(musicEvent, ShortMessage.PROGRAM_CHANGE), where));
+    private void treat_instrument(MusicEvent musicEvent, long when){
+        track.add(new MidiEvent(nova_mensagem_curta(musicEvent, ShortMessage.PROGRAM_CHANGE), when));
     }
 
-    private void treat_bpm(MusicEvent musicEvent, long where){
-        int mpq = (int)(CONVERSION/musicEvent.get_duration());
+    private void treat_bpm(MusicEvent musicEvent, long when){
+        int mpq = (int)(CONVERSION/musicEvent.get_bpm());
         int msg_size = 3;
         byte[] tempo = new byte[msg_size];
         tempo[0] = (byte) ((mpq >> 16) & 0xFF);
@@ -51,18 +51,18 @@ public class MusicEventHandler {
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
-        track.add(new MidiEvent(msg, where));
+        track.add(new MidiEvent(msg, when));
     }
 
-    private long treat_silence(long how_long, long where){
-        return where + how_long;
+    private long treat_silence(double how_long, long when){
+        return (long) (when + how_long * MusicBox.RESOLUTION);
     }
 
-    private long treat_nota(MusicEvent evento, long where){
-        track.add(new MidiEvent(nova_mensagem_curta(evento, ShortMessage.NOTE_ON), where));
-        where = where + evento.get_duration();
-        track.add(new MidiEvent(nova_mensagem_curta(evento, ShortMessage.NOTE_OFF), where));
-        return where;
+    private long treat_nota(MusicEvent evento, long when){
+        track.add(new MidiEvent(nova_mensagem_curta(evento, ShortMessage.NOTE_ON), when));
+        when = (long) (when + evento.get_duration() * MusicBox.RESOLUTION);
+        track.add(new MidiEvent(nova_mensagem_curta(evento, ShortMessage.NOTE_OFF), when));
+        return when;
     }
 
     private ShortMessage nova_mensagem_curta(MusicEvent musicEvent, int j_sound_comand){
@@ -77,7 +77,6 @@ public class MusicEventHandler {
 
 
     //constantes privadas
-    private static final long ZERO = 0;
     private static final int CONVERSION = 60000000;
     private static final int TEMPO_MSG = 0x51;
 
