@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
+
     private char lastCharacter;
     private final Map<Character, MusicStrategy> strategy = new HashMap<>();
 
@@ -13,21 +14,82 @@ public class Parser {
 
     private void createFunctionMap() {
         // preenchimento do mapa
-        strategy.put('A', (event) -> { /*Event for A*/ });
-        strategy.put('B', (event) -> { /*Event for B*/ });
-        strategy.put('C', (event) -> { /*Event for C*/ });
-        strategy.put('D', (event) -> { /*Event for D*/ });
-        strategy.put('E', (event) -> { /*Event for E*/ });
-        strategy.put('F', (event) -> { /*Event for F*/ });
-        strategy.put('G', (event) -> { /*Event for G*/ });
-        strategy.put('H', (event) -> { /*Event for H*/ });
 
+        //evento de tocar lá
+        this.strategy.put('A', (event) -> {
+            event.setNote(event.NOTE_A);
+            event.definePlayable(true);
+        });
+        //evento de tocar si
+        this.strategy.put('B', (event) -> {
+            event.setNote(event.NOTE_B);
+            event.definePlayable(true);
+        });
 
-        strategy.put('?', (event) -> { /*increases an octave*/});
-        strategy.put('V', (event) -> {/* decreases an octave */});
-        strategy.put('>', (event) -> {/* Increases BPM */});
-        strategy.put('<', (event) -> {/* Decreases BPM */});
-        strategy.put('`', (event) -> { /* default logic */ });
+        //evento de tocar dó
+        this.strategy.put('C', (event) -> {
+            event.setNote(event.NOTE_C);
+            event.definePlayable(true);
+        });
+
+        //evento de tocar ré
+        this.strategy.put('D', (event) -> {
+            event.setNote(event.NOTE_D);
+            event.definePlayable(true);
+        });
+
+        //evento de tocar mi
+        this.strategy.put('E', (event) -> {
+            event.setNote(event.NOTE_E);
+            event.definePlayable(true);
+        });
+
+        //evento de tocar fá
+        this.strategy.put('F', (event) -> {
+            event.setNote(event.NOTE_F);
+            event.definePlayable(true);
+        });
+
+        // evento de tocar sol
+        this.strategy.put('G', (event) -> {
+            event.setNote(event.NOTE_G);
+            event.definePlayable(true);
+        });
+
+        //evento de tocar si bemol
+        this.strategy.put('H', (event) -> {
+            event.setNote(event.NOTE_B - 1);
+            event.definePlayable(true);
+        });
+
+        //increase octave event parameter alter
+        this.strategy.put('?', (event) -> {
+            event.setOctave(event.getOctave() + 1);
+            event.definePlayable(false);
+        });
+        //decrease octave event parameter alter
+        this.strategy.put('V', (event) -> {
+            event.setOctave(event.getOctave() - 1);
+            event.definePlayable(false);
+        });
+
+        //increase bpm event parameter alter
+        this.strategy.put('>', (event) -> {
+            event.setBpm(event.getBpm() + event.BPM_VARIATION);
+            event.definePlayable(false);
+        });
+
+        //decrease bpm event parameter alter
+        this.strategy.put('<', (event) -> {
+            event.setBpm(event.getBpm() - event.BPM_VARIATION);
+            event.definePlayable(false);
+        });
+
+        //play last note
+        this.strategy.put('`', (event) -> {
+            if( this.lastCharacter >= 'A' && this.lastCharacter <= 'H')
+                event.definePlayable(true);
+        });
 
     }
 
@@ -36,24 +98,23 @@ public class Parser {
         MusicEvent currentState = new MusicEvent();
 
         for (char c : entryText.toCharArray()) {
-            MusicEvent evento  = processarCaractere(c, currentState);
-            partitura.add(evento);
-        }
+            processCharacter(c, currentState);
 
+            if(currentState.isPlayableEvent()){
+                partitura.add(new MusicEvent(currentState));
+            }
+        }
         return partitura;
     }
 
-    private MusicEvent processarCaractere(char c, MusicEvent currentState) {
-        // Busca a ação ou usa o _default_ (caractere '`')
-        MusicStrategy action = strategy.getOrDefault(c, strategy.get('`'));
-        MusicEvent newState = new MusicEvent(currentState);
+    private void processCharacter(char c, MusicEvent event) {
+
+        MusicStrategy action = this.strategy.getOrDefault(c, strategy.get('`'));
 
         if (action != null) {
-            // action.process(evento, lastCharacter);
-            //altera o estado de newState
+            action.apply(event);
         }
 
-        lastCharacter = c;
-        return newState;
+        this.lastCharacter = c;
     }
 }
