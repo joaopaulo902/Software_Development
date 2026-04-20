@@ -1,10 +1,7 @@
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Track;
 import java.util.List;
 
-public class Music_maker {//to do: handle exceptions
+public class MusicMaker {//to do: handle exceptions
     //constantes
     public static final int NUMBER_OF_TRACKS = 16;
 
