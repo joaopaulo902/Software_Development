@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    private final String LINE_BREAK = "\\R";
     private final Map<Character, MusicStrategy> strategy = new HashMap<>();
     private char lastCharacter;
 
@@ -118,6 +117,7 @@ public class Parser {
     }
 
     private String[] parseLines(String entry){
+        String LINE_BREAK = "\\R";
         return entry.split(LINE_BREAK);
     }
 

@@ -7,8 +7,8 @@ public enum NoteEnum {
     NOTE_A(9, 'A'),
     NOTE_B(11, 'B');
 
-    private int note;
-    private char label;
+    private final int note;
+    private final char label;
 
     NoteEnum(int value, char label){
         this.note = value;
@@ -23,16 +23,4 @@ public enum NoteEnum {
         return this.label;
     }
 
-    public static NoteEnum noteFromChar(char c) {
-        return switch (c) {
-            case 'A' -> NoteEnum.NOTE_A;
-            case 'B' -> NoteEnum.NOTE_B;
-            case 'C' -> NoteEnum.NOTE_C;
-            case 'D' -> NoteEnum.NOTE_D;
-            case 'E' -> NoteEnum.NOTE_E;
-            case 'F' -> NoteEnum.NOTE_F;
-            case 'G' -> NoteEnum.NOTE_G;
-            default -> throw new RuntimeException("not a note: " + c);
-        };
-    }
 }
