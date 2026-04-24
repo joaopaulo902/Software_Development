@@ -4,14 +4,14 @@ public class MusicEvent {
     //size of an octave including midi halfNotes
     public final int OCTAVE_SIZE = 12;
     public final int BPM_VARIATION = 10;
+    public final int MIDI_SATURATION = 127;
 
-    public final int NOTE_C = 0;
-    public final int NOTE_D = 2;
-    public final int NOTE_E = 4;
-    public final int NOTE_F = 5;
-    public final int NOTE_G = 7;
-    public final int NOTE_A = 9;
-    public final int NOTE_B = 11;
+    public final int MIDI_HARMONICA = 22;
+    public final int MIDI_BAGPIPES = 110;
+    public final int MIDI_TUBULAR_BELLS = 15;
+    public final int MIDI_AGOGO = 20;
+
+
     //tipo de musicEvent
     private boolean playableEvent;
 
@@ -79,7 +79,11 @@ public class MusicEvent {
     public boolean isPlayableEvent(){ return this.playableEvent; }
 
     public int getOctave(){
-        return octave;
+        return this.octave;
+    }
+
+    public int getNote(){
+        return this.note;
     }
 
     public int getAbsoluteNote () {
@@ -89,6 +93,10 @@ public class MusicEvent {
     public long getDuration(){ return this.duration; }
 
     public long getBpm(){ return this.bpm; }
+
+    public long getVolume() { return this.volume; }
+
+    public int getInstrument(){ return this.instrument; }
 
 
     public MusicEvent getEvent() {

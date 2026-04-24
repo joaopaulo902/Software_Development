@@ -36,28 +36,29 @@ No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. I
 
 ### Tabela de Especificação dos Caracteres
 
-|        Caractere         | Comportamento                                                        |
-|:------------------------:|:---------------------------------------------------------------------|
-|            A             | Nota Lá                                                              |
-|            B             | Nota Si                                                              |
-|            C             | Nota Dó                                                              |
-|            D             | Nota Ré                                                              |
-|            E             | Nota Mi                                                              |
-|            F             | Nota Fá                                                              |
-|            G             | Nota Sol                                                             |
-|            H             | Nota Si♭                                                             |
-|          SPACE           | Dobra o volume até a **Altura de Saturação**                         |
-|            ?             | Aumenta uma oitava na linha                                          |
-|            V             | Diminui uma oitava na linha                                          |
-|            <             | Diminui o bpm na linha                                               |
-|            >             | Aumenta o bpm na linha                                               | 
-|            !             | Troca o instrumento para **MIDI #22** (Harmonica)                    |
-|        [I, O, U]         | Troca instrumento para **MIDI #110** (Gaita de fole)                 |
-|        Dígito par        | Troca instrumento para **MIDI #[Atual + Dígito lido]**               |
-|    ; ou Dígito ímpar     | Troca instrumento para **MIDI #15** (Tubular Bells)                  |
-|          **,**           | Troca instrumento para **MIDI #20** (Agogô)                          |
-| [a, b, c, d, e, f, g, h] | Gera silêncio ou pausa                                               |
-|         **Else*          | Repete a **NOTA** tocada imediatamente antes, else silêncio ou pausa |
+|       Caractere       | Comportamento                                                                           |
+|:---------------------:|:----------------------------------------------------------------------------------------|
+|           A           | Nota Lá                                                                                 |
+|           B           | Nota Si                                                                                 |
+|           C           | Nota Dó                                                                                 |
+|           D           | Nota Ré                                                                                 |
+|           E           | Nota Mi                                                                                 |
+|           F           | Nota Fá                                                                                 |
+|           G           | Nota Sol                                                                                |
+|           b           | Transforma a nota tocada imediatamente anteriormente em [nota]♭, else silêncio ou pausa | 
+|           H           | Nota Si♭                                                                                |
+|         SPACE         | Dobra o volume até a **Altura de Saturação**                                            |
+|           ?           | Aumenta uma oitava na linha                                                             |
+|           V           | Diminui uma oitava na linha                                                             |
+|           <           | Diminui o bpm na linha                                                                  |
+|           >           | Aumenta o bpm na linha                                                                  | 
+|           !           | Troca o instrumento para **MIDI #22** (Harmonica)                                       |
+|       [I, O, U]       | Troca instrumento para **MIDI #110** (Gaita de fole)                                    |
+|      Dígito par       | Troca instrumento para **MIDI #[Atual + Dígito lido]**                                  |
+|   ; ou Dígito ímpar   | Troca instrumento para **MIDI #15** (Tubular Bells)                                     |
+|         **,**         | Troca instrumento para **MIDI #20** (Agogô)                                             |
+| [a, c, d, e, f, g, h] | Gera silêncio ou pausa                                                                  |
+|        **Else*        | Repete a **NOTA** tocada imediatamente antes, else silêncio ou pausa                    |
 
 ### Bibliotecas/APIs inclusas (provisório)
 

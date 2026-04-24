@@ -4,61 +4,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-
-    private char lastCharacter;
+    private final String LINE_BREAK = "\\R";
     private final Map<Character, MusicStrategy> strategy = new HashMap<>();
+    private char lastCharacter;
+
 
     public Parser() {
         createFunctionMap();
     }
 
     private void createFunctionMap() {
-        // preenchimento do mapa
+        // preenchimento do mapa de implementações de MusicStrategy
+        //default action
+        MusicStrategy defaultAction = (event) -> event.definePlayable(event.isPlayableEvent());
 
-        //evento de tocar lá
-        this.strategy.put('A', (event) -> {
-            event.setNote(event.NOTE_A);
-            event.definePlayable(true);
-        });
-        //evento de tocar si
-        this.strategy.put('B', (event) -> {
-            event.setNote(event.NOTE_B);
-            event.definePlayable(true);
-        });
+        //Comportamento das notas (checar se tá bom dps)
+        for (NoteEnum note : NoteEnum.values()){
+            final char c = note.getLabel();
+            strategy.put(c, (event) ->{
+                event.setNote(note.getNote());
+                event.definePlayable(true);
+            });
+        }
 
-        //evento de tocar dó
-        this.strategy.put('C', (event) -> {
-            event.setNote(event.NOTE_C);
-            event.definePlayable(true);
+        this.strategy.put('b', (event) -> {
+            if (this.lastCharacter == 'F' || this.lastCharacter == 'C'){
+                defaultAction.apply(event);
+            }
+            else if (this.lastCharacter >= 'A' && this.lastCharacter <= 'G'){
+               event.setNote(event.getNote() - 1);
+               event.definePlayable(true);
+            }
         });
-
-        //evento de tocar ré
-        this.strategy.put('D', (event) -> {
-            event.setNote(event.NOTE_D);
-            event.definePlayable(true);
-        });
-
-        //evento de tocar mi
-        this.strategy.put('E', (event) -> {
-            event.setNote(event.NOTE_E);
-            event.definePlayable(true);
-        });
-
-        //evento de tocar fá
-        this.strategy.put('F', (event) -> {
-            event.setNote(event.NOTE_F);
-            event.definePlayable(true);
-        });
-
-        // evento de tocar sol
-        this.strategy.put('G', (event) -> {
-            event.setNote(event.NOTE_G);
-            event.definePlayable(true);
-        });
-
         //evento de tocar si bemol
         this.strategy.put('H', (event) -> {
-            event.setNote(event.NOTE_B - 1);
+            event.setNote(NoteEnum.NOTE_B.getNote() - 1);
             event.definePlayable(true);
         });
 
@@ -70,6 +50,12 @@ public class Parser {
         //decrease octave event parameter alter
         this.strategy.put('V', (event) -> {
             event.setOctave(event.getOctave() - 1);
+            event.definePlayable(false);
+        });
+
+        //doubles volume and does wrap around if it reaches limit
+        this.strategy.put(' ', (event) -> {
+            event.setVolume((2 * event.getVolume()) % event.MIDI_SATURATION);
             event.definePlayable(false);
         });
 
@@ -85,19 +71,61 @@ public class Parser {
             event.definePlayable(false);
         });
 
-        //play last note
-        this.strategy.put('`', (event) -> {
-            if( this.lastCharacter >= 'A' && this.lastCharacter <= 'H')
-                event.definePlayable(true);
+        //set instrument to MIDI Harmonica
+        this.strategy.put('!', (event) -> {
+           event.setInstrument(event.MIDI_HARMONICA);
+           event.definePlayable(false);
         });
+
+        //set instrument to MIDI BAGPIPES
+        MusicStrategy bagpipesAction = (event) -> {
+            event.setInstrument(event.MIDI_BAGPIPES);
+            event.definePlayable(false);
+        };
+        this.strategy.put('I', bagpipesAction);
+        this.strategy.put('O', bagpipesAction);
+        this.strategy.put('U', bagpipesAction);
+
+
+        for(char c = '0'; c <= '9'; c++){
+            final int value = Character.getNumericValue(c);
+            //set instrument to MIDI # current + digit
+            if(value % 2 == 0){
+                this.strategy.put(c, (event) -> {
+                    event.setInstrument((event.getInstrument() + value) % event.MIDI_SATURATION);
+                    event.definePlayable(false);
+                });
+            }
+            //set instrument to TUBULAR BELLS
+            else {
+                this.strategy.put(c, (event) -> {
+                    event.setInstrument(event.MIDI_TUBULAR_BELLS);
+                    event.definePlayable(false);
+                });
+            }
+        }
+
+        //set instrument to TUBULAR BELLS
+        this.strategy.put(';', (event) -> {
+            event.setInstrument(event.MIDI_TUBULAR_BELLS);
+            event.definePlayable(false);
+        });
+
+        //default behaviour (if it wasn't a note don't play it, if it was, keep playing)
+        this.strategy.put('`', defaultAction);
+
 
     }
 
-    public List<MusicEvent> createPartitura(String entryText) {
+    private String[] parseLines(String entry){
+        return entry.split(LINE_BREAK);
+    }
+
+    private List<MusicEvent> createPartitura(String entry) {
         List<MusicEvent> partitura = new ArrayList<>();
         MusicEvent currentState = new MusicEvent();
 
-        for (char c : entryText.toCharArray()) {
+        for (char c : entry.toCharArray()) {
             processCharacter(c, currentState);
 
             if(currentState.isPlayableEvent()){
@@ -107,7 +135,21 @@ public class Parser {
         return partitura;
     }
 
-    private void processCharacter(char c, MusicEvent event) {
+    public List<List<MusicEvent>> parseFullMusic(String entryText) {
+        List<List<MusicEvent>> completeSongEvents = new ArrayList<>();
+
+        String[] lines = parseLines(entryText);
+
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) { // Ignora linhas em branco
+                List<MusicEvent> events = createPartitura(line);
+                completeSongEvents.add(events);
+            }
+        }
+        return completeSongEvents;
+    }
+
+        private void processCharacter(char c, MusicEvent event) {
 
         MusicStrategy action = this.strategy.getOrDefault(c, strategy.get('`'));
 
