@@ -18,15 +18,15 @@ public class Parser {
         MusicStrategy defaultAction = (event) -> event.definePlayable(event.isPlayableEvent());
 
         //Comportamento das notas (checar se tá bom dps)
-        for (NoteEnum note : NoteEnum.values()){
+        for (NoteEnum note : NoteEnum.values()) {
             final char c = note.getLabel();
-            strategy.put(c, (event) ->{
+            strategy.put(c, (event) -> {
                 event.setNote(note.getNote());
                 event.definePlayable(true);
             });
         }
 
-        this.strategy.put('b', (event) -> {
+        /*this.strategy.put('b', (event) -> {
             if (this.lastCharacter == 'F' || this.lastCharacter == 'C'){
                 defaultAction.apply(event);
             }
@@ -34,7 +34,8 @@ public class Parser {
                event.setNote(event.getNote() - 1);
                event.definePlayable(true);
             }
-        });
+        });*/
+
         //evento de tocar si bemol
         this.strategy.put('H', (event) -> {
             event.setNote(NoteEnum.NOTE_B.getNote() - 1);
@@ -60,20 +61,21 @@ public class Parser {
 
         //increase bpm event parameter alter
         this.strategy.put('>', (event) -> {
-            event.setBpm(event.getBpm() + event.BPM_VARIATION);
+            event.setBpm((event.getBpm() + event.BPM_VARIATION) % event.MIDI_SATURATION);
             event.definePlayable(false);
         });
 
         //decrease bpm event parameter alter
         this.strategy.put('<', (event) -> {
-            event.setBpm(event.getBpm() - event.BPM_VARIATION);
+            long bpm = (event.getBpm() - event.BPM_VARIATION);
+            event.setBpm(bpm > 0 ? bpm : event.getBpm());
             event.definePlayable(false);
         });
 
         //set instrument to MIDI Harmonica
         this.strategy.put('!', (event) -> {
-           event.setInstrument(event.MIDI_HARMONICA);
-           event.definePlayable(false);
+            event.setInstrument(event.MIDI_HARMONICA);
+            event.definePlayable(false);
         });
 
         //set instrument to MIDI BAGPIPES
@@ -86,10 +88,10 @@ public class Parser {
         this.strategy.put('U', bagpipesAction);
 
 
-        for(char c = '0'; c <= '9'; c++){
+        for (char c = '0'; c <= '9'; c++) {
             final int value = Character.getNumericValue(c);
             //set instrument to MIDI # current + digit
-            if(value % 2 == 0){
+            if (value % 2 == 0) {
                 this.strategy.put(c, (event) -> {
                     event.setInstrument((event.getInstrument() + value) % event.MIDI_SATURATION);
                     event.definePlayable(false);
@@ -116,7 +118,7 @@ public class Parser {
 
     }
 
-    private String[] parseLines(String entry){
+    private String[] parseLines(String entry) {
         String LINE_BREAK = "\\R";
         return entry.split(LINE_BREAK);
     }
@@ -128,7 +130,7 @@ public class Parser {
         for (char c : entry.toCharArray()) {
             processCharacter(c, currentState);
 
-            if(currentState.isPlayableEvent()){
+            if (currentState.isPlayableEvent()) {
                 partitura.add(new MusicEvent(currentState));
             }
         }
@@ -149,7 +151,7 @@ public class Parser {
         return completeSongEvents;
     }
 
-        private void processCharacter(char c, MusicEvent event) {
+    private void processCharacter(char c, MusicEvent event) {
 
         MusicStrategy action = this.strategy.getOrDefault(c, strategy.get('`'));
 

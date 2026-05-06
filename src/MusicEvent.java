@@ -33,7 +33,7 @@ public class MusicEvent {
         this.note = 0;
         this.duration = 0;
         this.bpm = 0;
-        this.volume = 0;
+        this.volume = 1;
         this.instrument = 0;
     }
 
