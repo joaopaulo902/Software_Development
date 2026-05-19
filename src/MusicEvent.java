@@ -1,29 +1,45 @@
 
 
 public class MusicEvent {
-    //tipo de musicEvent
-    private int type;
+    //size of an octave including midi halfNotes
+    public final int OCTAVE_SIZE = 12;
+    public final int BPM_VARIATION = 10;
+    public final int MIDI_SATURATION = 127;
 
-    //valor absoluto da nota (calculado no parsing em função da nota e da oitava)
+    public final int MIDI_HARMONICA = 22;
+    public final int MIDI_BAGPIPES = 110;
+    public final int MIDI_TUBULAR_BELLS = 15;
+    public final int MIDI_AGOGO = 20;
+
+
+    //tipo de musicEvent
+    private boolean playableEvent;
+
+
+
+    private int octave;
+    //valor relativo da nota
     private int note;
+
     //duração da nota
     private long duration;
     private long bpm;
     private long volume;
     private int instrument;
 
-    // construtor genérico
+    // construtor genérico (atualizar para receber os parâmetros especificados na lista de requisitos)
     public MusicEvent() {
-        this.type = Evento.NON_APLICABLE;
-        this.note = Evento.NON_APLICABLE;
-        this.duration = Evento.NON_APLICABLE;
-        this.bpm = Evento.NON_APLICABLE;
-        this.volume = Evento.NON_APLICABLE;
-        this.instrument = Evento.NON_APLICABLE;
+        this.playableEvent = false;
+        this.note = 0;
+        this.duration = 0;
+        this.bpm = 0;
+        this.volume = 1;
+        this.instrument = 0;
     }
 
     public MusicEvent(MusicEvent copy){
-        this.type = copy.type;
+        this.playableEvent = copy.playableEvent;
+        this.octave = copy.octave;
         this.note = copy.note;
         this.duration = copy.duration;
         this.bpm = copy.bpm;
@@ -34,15 +50,17 @@ public class MusicEvent {
 
 
 
-    public void setType(int typeInput){
-        this.type = typeInput;
+    public void definePlayable(boolean isPlayable){
+        this.playableEvent = isPlayable;
     }
 
+    public void setOctave(int octaveInput) { this.octave = octaveInput; }
 
     public void setNote(int noteInput) {
         this.note = noteInput;
     }
 
+    //might be useless
     public void setDuration(long inputDuration) {
         this.duration = inputDuration;
     }
@@ -51,13 +69,35 @@ public class MusicEvent {
         this.bpm = inputBpm;
     }
 
-    public void setInstrument(int inputInstrument) {
-        this.instrument = inputInstrument;
+    // definitely not useless
+    public void setInstrument(int inputInstrument) { this.instrument = inputInstrument; }
+
+    //not useless
+    public void setVolume(long volume) { this.volume = volume; }
+
+
+    public boolean isPlayableEvent(){ return this.playableEvent; }
+
+    public int getOctave(){
+        return this.octave;
     }
 
-    public void setVolume(long volume) {
-        this.volume = volume;
+    public int getNote(){
+        return this.note;
     }
+
+    public int getAbsoluteNote () {
+        return (OCTAVE_SIZE * this.octave) + this.note;
+    }
+
+    public long getDuration(){ return this.duration; }
+
+    public long getBpm(){ return this.bpm; }
+
+    public long getVolume() { return this.volume; }
+
+    public int getInstrument(){ return this.instrument; }
+
 
     public MusicEvent getEvent() {
         return this;
