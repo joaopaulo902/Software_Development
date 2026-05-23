@@ -123,35 +123,35 @@ public class Parser {
         return entry.split(LINE_BREAK);
     }
 
-    private List<MusicEvent> createPartitura(String entry) {
-        List<MusicEvent> partitura = new ArrayList<>();
-        MusicEvent currentState = new MusicEvent();
+    private List<PreliminaryMusicEvent> createPartitura(String entry) {
+        List<PreliminaryMusicEvent> partitura = new ArrayList<>();
+        PreliminaryMusicEvent currentState = new PreliminaryMusicEvent();
 
         for (char c : entry.toCharArray()) {
             processCharacter(c, currentState);
 
             if (currentState.isPlayableEvent()) {
-                partitura.add(new MusicEvent(currentState));
+                partitura.add(new PreliminaryMusicEvent(currentState));
             }
         }
         return partitura;
     }
 
-    public List<List<MusicEvent>> parseFullMusic(String entryText) {
-        List<List<MusicEvent>> completeSongEvents = new ArrayList<>();
+    public List<List<PreliminaryMusicEvent>> parseFullMusic(String entryText) {
+        List<List<PreliminaryMusicEvent>> completeSongEvents = new ArrayList<>();
 
         String[] lines = parseLines(entryText);
 
         for (String line : lines) {
             if (!line.trim().isEmpty()) { // Ignora linhas em branco
-                List<MusicEvent> events = createPartitura(line);
+                List<PreliminaryMusicEvent> events = createPartitura(line);
                 completeSongEvents.add(events);
             }
         }
         return completeSongEvents;
     }
 
-    private void processCharacter(char c, MusicEvent event) {
+    private void processCharacter(char c, PreliminaryMusicEvent event) {
 
         MusicStrategy action = this.strategy.getOrDefault(c, strategy.get('`'));
 
