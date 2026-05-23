@@ -1,6 +1,6 @@
 
 
-public class MusicEvent {
+public class PreliminaryMusicEvent {
     //size of an octave including midi halfNotes
     public final int OCTAVE_SIZE = 12;
     public final int BPM_VARIATION = 10;
@@ -28,7 +28,7 @@ public class MusicEvent {
     private int instrument;
 
     // construtor genérico (atualizar para receber os parâmetros especificados na lista de requisitos)
-    public MusicEvent() {
+    public PreliminaryMusicEvent() {
         this.playableEvent = false;
         this.note = 0;
         this.duration = 0;
@@ -37,7 +37,7 @@ public class MusicEvent {
         this.instrument = 0;
     }
 
-    public MusicEvent(MusicEvent copy){
+    public PreliminaryMusicEvent(PreliminaryMusicEvent copy){
         this.playableEvent = copy.playableEvent;
         this.octave = copy.octave;
         this.note = copy.note;
@@ -99,7 +99,7 @@ public class MusicEvent {
     public int getInstrument(){ return this.instrument; }
 
 
-    public MusicEvent getEvent() {
+    public PreliminaryMusicEvent getEvent() {
         return this;
     }
 
