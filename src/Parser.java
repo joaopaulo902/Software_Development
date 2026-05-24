@@ -143,7 +143,7 @@ public class Parser {
         String[] lines = parseLines(entryText);
 
         for (String line : lines) {
-            if (!line.trim().isEmpty()) { // Ignora linhas em branco
+            if (!line.trim().isEmpty()) { // Ignore Blank Lines
                 List<PreliminaryMusicEvent> events = createPartitura(line);
                 completeSongEvents.add(events);
             }
