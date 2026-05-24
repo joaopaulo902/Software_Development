@@ -9,8 +9,8 @@ public class MusicMaker {//to do: handle exceptions
     public void open(Track[] tracks)
     {
         for(int i = 0; i < NUMBER_OF_TRACKS; i++){
-            faixas[i] = new Canal();
-            faixas[i].open(i, tracks[i]);
+            channels[i] = new Channel();
+            channels[i].open(i, tracks[i]);
         }
         is_open = true;
     }
@@ -18,29 +18,29 @@ public class MusicMaker {//to do: handle exceptions
     public void close()
     {
         for (int i = 0; i < NUMBER_OF_TRACKS; i++){
-            faixas[i].close();
+            channels[i].close();
         }
         is_open = false;
     }
 
-    public void add_line(List<Evento> es)//adicionar funcao de substituicao de canal
+    public void add_line(List<MusicEvent> es)//adicionar funcao de substituicao de canal
     {
-        if(es.size() == 0){
+        if(es.isEmpty()){
             return;
         }
         int onde = right_channel();
         if(onde==-1){
             return;
         }
-        faixas[onde].set_eventos(es);
+        channels[onde].set_eventos(es);
         empty_it_is = false;
     }
 
     public void delete_line(int id)
     {
-        faixas[id].clear_faixa();
+        channels[id].clear_faixa();
         for(int i = 0; i < NUMBER_OF_TRACKS; i++){
-            if(faixas[i].in_use()){
+            if(channels[i].in_use()){
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class MusicMaker {//to do: handle exceptions
     }
 
     //variaveis privadas
-    private Canal[] faixas;
+    private Channel[] channels;
     private boolean is_open = false;
     private boolean empty_it_is = true;
 
@@ -66,7 +66,7 @@ public class MusicMaker {//to do: handle exceptions
     private int right_channel()
     {
         int i = 0;
-        while (faixas[i].in_use() == true &&  i < NUMBER_OF_TRACKS){
+        while (channels[i].in_use() &&  i < NUMBER_OF_TRACKS){
             i++;
         }
         if (i < NUMBER_OF_TRACKS){

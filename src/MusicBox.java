@@ -19,7 +19,7 @@ public class MusicBox {// to do: handle exceptions
             e.printStackTrace();//handle
         }
         try {
-            sequence =  new Sequence(Sequence.PPQ, RESOLUTION, maker.NUMBER_OF_TRACKS);
+            sequence =  new Sequence(Sequence.PPQ, RESOLUTION, MusicMaker.NUMBER_OF_TRACKS);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class MusicBox {// to do: handle exceptions
         open_it_is = false;
     }
 
-    public void write_line(List<Evento> e){
+    public void write_line(List<MusicEvent> e){
         if(!open_it_is){
             return;
         }
