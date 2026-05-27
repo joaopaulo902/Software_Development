@@ -60,7 +60,6 @@ public class PreliminaryMusicEvent {
         this.note = noteInput;
     }
 
-    //might be useless
     public void setDuration(long inputDuration) {
         this.duration = inputDuration;
     }
@@ -69,13 +68,11 @@ public class PreliminaryMusicEvent {
         this.bpm = inputBpm;
     }
 
-    // definitely not useless
     public void setInstrument(int inputInstrument) { this.instrument = inputInstrument; }
 
-    //not useless
     public void setVolume(long volume) { this.volume = volume; }
 
-
+    //should be indexed into an ENUM for types of events (is currently in MusicEventClass)
     public boolean isPlayableEvent(){ return this.playableEvent; }
 
     public int getOctave(){
