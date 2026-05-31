@@ -1,6 +1,8 @@
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,9 +12,9 @@ import java.util.stream.Stream;
 
 
 public class MusicCollection {
-    public List<String> view(){
+    public static List<String> view(){
         List<String>songs = List.of();
-        try (Stream<Path> paths = Files.list(Paths.get(DIR_PATH))) {
+        try (Stream<Path> paths = Files.list(Paths.get(DIRECTORY_PATH))) {
             songs = paths
                     .filter(Files::isRegularFile) // Filters out subdirectories
                     .map(Path::getFileName)
@@ -23,21 +25,27 @@ public class MusicCollection {
         }
         return songs;
     }
-    public boolean save(Sequence to_save, String name){
+    public static void save(Sequence to_save, String name, List<Path> text_files){
+        Path texts = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
+        try {
+            Files.createDirectories(texts);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         int[] temp = MidiSystem.getMidiFileTypes(to_save);
         int save_type = temp[0];
-        File old_file = new File(DIR_PATH +name+".midi");
+        File old_file = new File(DIRECTORY_PATH +name+".midi");
         old_file.delete();
-        File out_file = new File(DIR_PATH +name+".midi");
+        File out_file = new File(DIRECTORY_PATH +name+".midi");
         try {
             MidiSystem.write(to_save, save_type, out_file);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return true;
+        save_txts(name, text_files);
     }
-    public Sequence load(String name){
-        File song = new File(DIR_PATH +name+".midi");
+    public static Sequence load_song(String name){
+        File song = new File(DIRECTORY_PATH +name+".midi");
         try {
             return MidiSystem.getSequence(song);
         } catch (InvalidMidiDataException e) {
@@ -46,32 +54,71 @@ public class MusicCollection {
             throw new RuntimeException(e);
         }
     }
-    public void delete(String name){
-        File old_file = new File(DIR_PATH +name+".midi");
-        old_file.delete();
-    }
-    public List<MusicEvent> decompress(Sequence sequence, int id){
-        List<MusicEvent> output = List.of();
-        Track[] temp = sequence.getTracks();
-        Track work_track = temp[id];
-        for(int i = 0; i < work_track.size(); i++){
-            MusicEvent eve = parser(work_track.get(i));
-            if(eve != null){
-                output.add(eve);
-            }
+    public static void load_texts(String name, Path work_directory){
+        Path texts = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
+        List<Path> text_files = List.of();
+        try (Stream<Path> stream = Files.walk(texts)){
+            text_files = stream
+                    .filter(Files::isRegularFile)
+                    .collect(Collectors.toUnmodifiableList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return output;
+        work_directory = Path.of(work_directory + name + "_");
+        int i = 0;
+        for (Path txt : text_files){
+            Path output = Paths.get(work_directory + String.valueOf(i));
+            try {
+                Files.copy(output, txt, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            i++;
+        }
+    }
+    public static void delete(String name){
+        if (name.equals(EXAMPLE_SONG)){
+            return;
+        }
+        Path old_file = Paths.get(DIRECTORY_PATH +name+".midi");
+        try {
+            Files.delete(old_file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Path old_directory = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
+        try (Stream<Path> stream = Files.walk(old_directory)){
+            stream.sorted(Comparator.reverseOrder())
+                    .forEach(text_file -> {
+                        try {
+                            Files.delete(text_file);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private MusicEvent parser(MidiEvent e){
-        MidiMessage input = e.getMessage();
-        MusicEvent output;
-        byte[] message = input.getMessage();
-        return output;
+
+    private static void save_txts(String name, List<Path> text_files){
+        int i = 0;
+        for(Path txt : text_files){
+            Path output = Paths.get(text_path(name, i));
+            try {
+                Files.copy(output, txt, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
     }
-    private final String DIR_PATH = "SONG_SAVES";
-    private final int BPM_STATUS = 0xff;
-    private final int BPM_STATUS = 0xff;
-    private final int BPM_STATUS = 0xff;
-    private final int BPM_STATUS = 0xff;
+    private static String text_path(String name, int track_number){
+        return DIRECTORY_PATH +name+ TEXT_DIRECTORY + "/" + name + "_" + String.valueOf(track_number) + ".txt";
+    }
+
+    private static final String EXAMPLE_SONG = "Sgt_Pepper";
+    private static final String DIRECTORY_PATH = "Saved_songs/";
+    private static final String TEXT_DIRECTORY = "_texts";
 }

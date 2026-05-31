@@ -1,4 +1,5 @@
 import javax.sound.midi.*;
+import java.nio.file.Path;
 import java.util.List;
 
 public class MusicBox {// to do: handle exceptions
@@ -73,6 +74,23 @@ public class MusicBox {// to do: handle exceptions
             return;
         }
         sequencer.stop();
+    }
+
+    public List<String> view_saved(){
+        return MusicCollection.view();
+    }
+
+    public void save(String name, List<Path> text_files){
+        MusicCollection.save(sequence, name, text_files);
+    }
+
+    public void delete(String name){
+        MusicCollection.delete(name);
+    }
+
+    public void load_saved(String name, Path work_directory){
+        sequence = MusicCollection.load_song(name);
+        MusicCollection.load_texts(name, work_directory);
     }
 
 
