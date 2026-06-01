@@ -1,8 +1,13 @@
+import javax.swing.*;
+
 public class Main {
 
     public static void main(String[] args){
-        TextProcessor testFile = new TextProcessor();
-        String input = testFile.LoadFile("test.txt");
-        TestParser.functionality(input);
+        MainScreen screen = new MainScreen();
+        SwingUtilities.invokeLater(() -> screen.setVisible(true));
+
+        //TextFileProcessor testFile = new TextFileProcessor();
+        //String input = testFile.LoadFile("test.txt");
+        //TestParser.functionality(input);
     }
 }

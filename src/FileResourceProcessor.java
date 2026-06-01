@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-/*
+/**
     Generic processor for generating resources to be worked on by other classes
  */
 public abstract class FileResourceProcessor<T> {
