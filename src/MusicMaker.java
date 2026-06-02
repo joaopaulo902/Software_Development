@@ -1,13 +1,14 @@
 import javax.sound.midi.Track;
 import java.util.List;
 
-public class MusicMaker {//to do: handle exceptions
-    //constantes
+public class MusicMaker {
+
     public static final int NUMBER_OF_TRACKS = 16;
 
-    //metodos publicos
+
     public void open(Track[] tracks)
     {
+        channels = new Channel[NUMBER_OF_TRACKS];
         for(int i = 0; i < NUMBER_OF_TRACKS; i++){
             channels[i] = new Channel();
             channels[i].open(i, tracks[i]);
@@ -23,16 +24,12 @@ public class MusicMaker {//to do: handle exceptions
         is_open = false;
     }
 
-    public void add_line(List<MusicEvent> es)//adicionar funcao de substituicao de canal
+    public void add_line(List<MusicEvent> es, int id)
     {
         if(es.isEmpty()){
             return;
         }
-        int onde = right_channel();
-        if(onde==-1){
-            return;
-        }
-        channels[onde].set_eventos(es);
+        channels[id].set_eventos(es);
         empty_it_is = false;
     }
 
@@ -57,21 +54,10 @@ public class MusicMaker {//to do: handle exceptions
         return empty_it_is;
     }
 
-    //variaveis privadas
+
     private Channel[] channels;
     private boolean is_open = false;
     private boolean empty_it_is = true;
 
-    //metodos privados
-    private int right_channel()
-    {
-        int i = 0;
-        while (channels[i].in_use() &&  i < NUMBER_OF_TRACKS){
-            i++;
-        }
-        if (i < NUMBER_OF_TRACKS){
-            return i;
-        }
-        return -1;
-    }
+
 }

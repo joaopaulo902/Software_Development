@@ -1,12 +1,14 @@
 import javax.sound.midi.*;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-public class MusicBox {// to do: handle exceptions
-    //constantes
+public class MusicBox {
+
     public static final int RESOLUTION = 24;
 
-    //metodos publicos
+
     public void open(){
         maker = new MusicMaker();
         try {
@@ -42,12 +44,12 @@ public class MusicBox {// to do: handle exceptions
         open_it_is = false;
     }
 
-    public void write_line(List<MusicEvent> e){
+    public void write_line(List<MusicEvent> e, int id){
         if(!open_it_is){
             return;
         }
-        maker.add_line(e);
-    }//o instrumento inicial deve ser o primeiro evento
+        maker.add_line(e, id);
+    }
 
     public void delete_line(int id){
         if(!open_it_is){
@@ -94,11 +96,82 @@ public class MusicBox {// to do: handle exceptions
     }
 
 
-    //variaveis privadas
+
     private MusicMaker maker;
     private Sequencer sequencer;
     private Sequence sequence;
     private boolean open_it_is =  false;
 
-    //metodos privados
+
+    public void line_test_simple(){
+        List<MusicEvent> test_events = new LinkedList<>();
+        MusicEvent bpm = new MusicEvent();
+        bpm.new_bpm(random_correct_number());
+        //test_events.add(bpm);
+        //System.out.println("Initial BPM:" + bpm.get_bpm());
+        MusicEvent first_instrument = new MusicEvent();
+        first_instrument.new_instrument(random_correct_number());
+        //System.out.println("Initial instrument:" + first_instrument.get_instrument());
+        //test_events.add(first_instrument);
+        test_ending(test_events);
+        write_line(test_events, 0);
+        play();
+        save(TEST_SAVE, null);
+    }
+    private int random_correct_number(){
+        Random number_gen = new Random();
+        return number_gen.nextInt(CORRECT_LIMIT);
+    }
+    public void multi_line_test(){
+        int initial_bpm = random_correct_number();
+        MusicEvent bpm = new MusicEvent();
+        bpm.new_bpm(initial_bpm);
+        for(int i =0; i < NUMBER_OF_TEST_LINES; i++){
+            List<MusicEvent> test_events = new LinkedList<>();
+            MusicEvent bpm_copy = new MusicEvent();
+            bpm_copy = bpm;
+            test_events.add(bpm_copy);
+            test_events = line_builder(test_events);
+            write_line(test_events, i);
+        }
+        play();
+        save(TEST_SAVE, null);
+    }
+    private List<MusicEvent> line_builder(List<MusicEvent> test_events){
+        MusicEvent first_instrument = new MusicEvent();
+        first_instrument.new_instrument(random_correct_number());
+        System.out.println("Initial instrument:" + first_instrument.get_instrument());
+        test_events.add(first_instrument);
+        test_ending(test_events);
+        return test_events;
+    }
+
+    private void test_ending(List<MusicEvent> test_events) {
+        for (int i = 0; i < NUMBER_OF_TEST_NOTES; i++){
+            MusicEvent note = new MusicEvent();
+            note.new_note(random_correct_number(), random_correct_number(), MusicEvent.QUARTER_NOTE);
+            System.out.println("Note N " + i + " Tone " + note.get_note() + " Volume " + note.get_volume());
+            test_events.add(note);
+        }
+        MusicEvent second_bpm = new MusicEvent();
+        second_bpm.new_bpm(random_correct_number());
+        test_events.add(second_bpm);
+        System.out.println("Initial BPM:" + second_bpm.get_bpm());
+        MusicEvent second_instrument = new MusicEvent();
+        second_instrument.new_instrument(random_correct_number());
+        System.out.println("Initial instrument:" + second_instrument.get_instrument());
+        test_events.add(second_instrument);
+        for (int i = 0; i < NUMBER_OF_TEST_NOTES; i++){
+            MusicEvent note = new MusicEvent();
+            note.new_note(random_correct_number(), random_correct_number(), MusicEvent.QUARTER_NOTE);
+            int note_n = i + NUMBER_OF_TEST_NOTES;
+            System.out.println("Note N " + note_n + " Tone " + note.get_note() + " Volume " + note.get_volume());
+            test_events.add(note);
+        }
+    }
+
+    private final int NUMBER_OF_TEST_LINES = 6;
+    private final int CORRECT_LIMIT = 128;
+    private final int NUMBER_OF_TEST_NOTES = 5;
+    private final String TEST_SAVE = "TEST";
 }

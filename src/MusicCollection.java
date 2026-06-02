@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 
 public class MusicCollection {
     public static List<String> view(){
-        List<String>songs = List.of();
+        List<String>songs = new LinkedList<>();
         try (Stream<Path> paths = Files.list(Paths.get(DIRECTORY_PATH))) {
             songs = paths
                     .filter(Files::isRegularFile) // Filters out subdirectories
@@ -46,6 +47,15 @@ public class MusicCollection {
     }
     public static Sequence load_song(String name){
         File song = new File(DIRECTORY_PATH +name+".midi");
+        if(!song.canRead()){
+            Sequencer helper;
+            try {
+                helper = MidiSystem.getSequencer();
+            } catch (MidiUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+            return helper.getSequence();
+        }
         try {
             return MidiSystem.getSequence(song);
         } catch (InvalidMidiDataException e) {
@@ -56,13 +66,13 @@ public class MusicCollection {
     }
     public static void load_texts(String name, Path work_directory){
         Path texts = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
-        List<Path> text_files = List.of();
+        List<Path> text_files;
         try (Stream<Path> stream = Files.walk(texts)){
             text_files = stream
                     .filter(Files::isRegularFile)
                     .collect(Collectors.toUnmodifiableList());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return;
         }
         work_directory = Path.of(work_directory + name + "_");
         int i = 0;
@@ -103,6 +113,9 @@ public class MusicCollection {
 
 
     private static void save_txts(String name, List<Path> text_files){
+        if (text_files == null){
+            return;
+        }
         int i = 0;
         for(Path txt : text_files){
             Path output = Paths.get(text_path(name, i));
