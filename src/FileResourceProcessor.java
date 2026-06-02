@@ -6,7 +6,7 @@ import java.nio.file.Paths;
  */
 public abstract class FileResourceProcessor<T> {
     /**
-     * Loads the file from the parameter and returns a buffer using from its contents
+     * Loads the file from the parameter and returns a buffer from its contents
      * @return processFile(path) a list of generic type (depends on class extension)
      */
     public T LoadFile(String fileName){

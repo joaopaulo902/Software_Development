@@ -1,6 +1,6 @@
 
 
-public class PreliminaryMusicEvent {
+public class ParserEvent {
     //size of an octave including midi halfNotes
     public final int OCTAVE_SIZE = 12;
     public final int BPM_VARIATION = 10;
@@ -27,17 +27,19 @@ public class PreliminaryMusicEvent {
     private long volume;
     private int instrument;
 
-    // construtor genérico (atualizar para receber os parâmetros especificados na lista de requisitos)
-    public PreliminaryMusicEvent() {
+
+    public ParserEvent(int inputBpm, int inputInstrument, int inputVolume){
+        final int FILLER_VALUE = 0;
+
         this.playableEvent = false;
-        this.note = 0;
-        this.duration = 0;
-        this.bpm = 0;
-        this.volume = 1;
-        this.instrument = 0;
+        this.note = FILLER_VALUE;
+        this.duration = FILLER_VALUE;
+        this.bpm = inputBpm;
+        this.volume = inputVolume;
+        this.instrument = inputInstrument;
     }
 
-    public PreliminaryMusicEvent(PreliminaryMusicEvent copy){
+    public ParserEvent(ParserEvent copy){
         this.playableEvent = copy.playableEvent;
         this.octave = copy.octave;
         this.note = copy.note;
@@ -96,7 +98,7 @@ public class PreliminaryMusicEvent {
     public int getInstrument(){ return this.instrument; }
 
 
-    public PreliminaryMusicEvent getEvent() {
+    public ParserEvent getEvent() {
         return this;
     }
 
