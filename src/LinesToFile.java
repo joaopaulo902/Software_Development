@@ -15,7 +15,10 @@ public class LinesToFile {
             output += input.text();
             output += "\n";
         }
-        if(null == output || output.length() == 0){
+        if(output == null){
+            return;
+        }
+        if (output.length() == 0){
             return;
         }
         output = output.substring(0, output.length() - 1);
