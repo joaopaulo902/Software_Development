@@ -1,12 +1,16 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainScreen extends JFrame{
     private final int SCREEN_WIDTH = 800;
     private final int SCREEN_HEIGHT = 720;
 
-    private JTextField songInput;
+    private JScrollPane textScrollPane;
+    private JPanel linesContainer;
+
+    private final List<MusicLine> musicLinesList = new ArrayList<>();
 
     public MainScreen(){
         initializeMainScreen();
@@ -22,44 +26,102 @@ public class MainScreen extends JFrame{
     }
 
     private void initializeMainScreenComponents(){
+        this.linesContainer = new JPanel();
+        this.linesContainer.setLayout(new BoxLayout(linesContainer, BoxLayout.Y_AXIS));
         setJMenuBar(createMenuBar());
         add(createWritingArea(), BorderLayout.CENTER);
-        add(createSidebarPanel(), BorderLayout.EAST);
+        //add(createSidebarPanel(), BorderLayout.EAST);
+    }
+
+    private JScrollPane createWritingArea(){
+        JScrollPane scrollPane = new JScrollPane(linesContainer);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        this.textScrollPane = scrollPane;
+
+        addNewLine();
+
+        return scrollPane;
     }
 
     private JMenuBar createMenuBar(){
         JMenuBar menuBar = new JMenuBar();
 
-        menuBar.add(createSaveButton());
         menuBar.add(createImportMenu());
+        menuBar.add(createSaveButton());
+        menuBar.add(createConvertToMidiButton());
+        menuBar.add(createAddLineButton());
 
         return menuBar;
     }
 
-    private JButton createSaveButton(){
-        JButton saveButton = new JButton("Save");
 
-        saveButton.setContentAreaFilled(false);
-        saveButton.setBorderPainted(false);
-        saveButton.setFocusPainted(false);
 
-        saveButton.addActionListener(e -> {
-            System.out.println("saved progress");
-        });
+    private void setMenuBarButtonParameters(JButton button){
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
 
-        saveButton.addMouseListener(new java.awt.event.MouseAdapter(){
+        button.addMouseListener(new java.awt.event.MouseAdapter(){
             @Override
             public void mousePressed(java.awt.event.MouseEvent evt){
-                saveButton.setContentAreaFilled(true);
+                button.setContentAreaFilled(true);
             }
             @Override
             public void mouseReleased(java.awt.event.MouseEvent evt){
-                saveButton.setContentAreaFilled(false);
+                button.setContentAreaFilled(false);
             }
+        });
+    }
+
+    private JButton createConvertToMidiButton(){
+        JButton convertToMidiButton = new JButton("Convert to Midi");
+
+        setMenuBarButtonParameters(convertToMidiButton);
+
+        convertToMidiButton.addActionListener(e ->{
+            System.out.println("converting to midi file");
+            saveText();
 
         });
 
+        return convertToMidiButton;
+    }
+
+    private void saveText(){
+        System.out.println("saved progress");
+        List<LineInput> allLines = getAllLines(this.textScrollPane);
+        for (LineInput line: allLines){
+            System.out.println(line.text());
+            System.out.println(line.BPM());
+            System.out.println(line.Volume());
+            System.out.println(line.instrument());
+        }
+        //to do: implement way to connect with saving file
+        //to do: implement way of collecting Song Presets
+
+        //System.out.println(sheet);
+    }
+
+
+    private JButton createSaveButton(){
+        JButton saveButton = new JButton("Save");
+
+        setMenuBarButtonParameters(saveButton);
+
+        saveButton.addActionListener(e -> saveText());
+
         return saveButton;
+    }
+
+    private JButton createAddLineButton(){
+        JButton addLineButton = new JButton("Add Line");
+        setMenuBarButtonParameters(addLineButton);
+
+        // ADAPTAÇÃO: Ativando a ação de criar nova linha pelo menu
+        addLineButton.addActionListener(e -> addNewLine());
+
+        return addLineButton;
     }
 
     private JMenu createImportMenu(){
@@ -89,46 +151,71 @@ public class MainScreen extends JFrame{
         return importMenu;
     }
 
-    private JScrollPane createWritingArea(){
-        JTextArea textArea = new JTextArea();
 
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
+    private void addNewLine() {
+        JPanel rowPanel = new JPanel(new BorderLayout(10, 0)); //fix magic numbers
+        rowPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+
+        //limits vertical size for row
+        rowPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+
+        JTextField songInput = new JTextField("input text here");
+        rowPanel.add(songInput, BorderLayout.CENTER);
 
 
-        textArea.setText("input text here");
+        JPanel presetsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+
+        presetsPanel.add(new JLabel("BPM:"));
+        JTextField bpmInput = new JTextField("120", 3);
+        presetsPanel.add(bpmInput);
+
+        presetsPanel.add(new JLabel("Vol:"));
+        JTextField volumeInput = new JTextField("100", 3);
+        presetsPanel.add(volumeInput);
+
+        presetsPanel.add(new JLabel("Inst:"));
+        JTextField instrumentInput = new JTextField("0", 3);
+        presetsPanel.add(instrumentInput);
+
+        //dataStructure for retrieval
+        MusicLine musicLine = new MusicLine(rowPanel, songInput, bpmInput, volumeInput, instrumentInput);
+        musicLinesList.add(musicLine);
 
 
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JButton deleteButton = new JButton("X");
+        deleteButton.setForeground(Color.RED);
+        deleteButton.setFocusPainted(false);
+        deleteButton.addActionListener(e -> {
+            linesContainer.remove(rowPanel);
+            musicLinesList.remove(musicLine); //removes line from MusicLine
+            linesContainer.revalidate();
+            linesContainer.repaint();
+        });
+        presetsPanel.add(deleteButton);
 
+        rowPanel.add(presetsPanel, BorderLayout.EAST);
 
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        return scrollPane;
+        // Empilha no container principal e atualiza a tela
+        linesContainer.add(rowPanel);
+        linesContainer.revalidate();
+        linesContainer.repaint();
     }
 
-    private JPanel createSidebarPanel(){
-        JPanel sideBar = new JPanel();
+    public List<LineInput> getAllLines(JScrollPane scrollPane){
+        List<LineInput> lineValues = new ArrayList<>();
 
-        sideBar.setLayout(new GridLayout (0, 1, 5, 5));
-        sideBar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        sideBar.add(new JLabel("BPM:"));
-        JTextField bpmInput = new JTextField("120");
-        sideBar.add(bpmInput);
-
-        sideBar.add(new JLabel("Volume:"));
-        JTextField volumeInput = new JTextField("100");
-        sideBar.add(volumeInput);
-
-        sideBar.add(new JLabel("Instrumento:"));
-        JTextField instrumentInput = new JTextField("Piano");
-        sideBar.add(instrumentInput);
-
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(sideBar, BorderLayout.NORTH);
-
-        return wrapper;
+        for (MusicLine line : musicLinesList) {
+            String inputText = line.songInput.getText();
+            int BPM = Integer.parseInt(line.bpmInput.getText());
+            int volume = Integer.parseInt(line.volumeInput.getText());
+            int instrument = Integer.parseInt(line.instrumentInput.getText());
+            LineInput lineValue = new LineInput(inputText, BPM, volume, instrument);
+            lineValues.add(lineValue);
+        }
+        return lineValues;
     }
 
 }
