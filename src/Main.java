@@ -1,4 +1,5 @@
 import java.nio.file.Paths;
+import javax.swing.*;
 
 public class Main {
 
@@ -9,6 +10,11 @@ public class Main {
 
 
         //String input = "[10] >>>A B C D E F G H";
+        MainScreen screen = new MainScreen();
+        SwingUtilities.invokeLater(() -> screen.setVisible(true));
+
+        //TextFileProcessor testFile = new TextFileProcessor();
+        //String input = testFile.LoadFile("test.txt");
         //TestParser.functionality(input);
     }
 }

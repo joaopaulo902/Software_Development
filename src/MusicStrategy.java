@@ -1,8 +1,8 @@
 @FunctionalInterface
 public interface MusicStrategy {
     /**
-     * Define a ação a ser executada para um caractere específico.
-     * @param event O evento musical que será modificado.
+     * Define the contract of what needs to be executed when processing a specific character
+     * @param event The event template to be modified in the processing of the character.
      */
     void apply(PreliminaryMusicEvent event);
 }
