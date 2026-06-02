@@ -1,4 +1,4 @@
-
+import java.lang.reflect.Type;
 
 public class ParserEvent {
     //size of an octave including midi halfNotes
@@ -13,14 +13,9 @@ public class ParserEvent {
 
 
     //tipo de musicEvent
-    private boolean playableEvent;
-
-
-
+    private TypeEventParser typeEvent;
     private int octave;
-    //valor relativo da nota
     private int note;
-
     //duração da nota
     private long duration;
     private long bpm;
@@ -28,12 +23,12 @@ public class ParserEvent {
     private int instrument;
 
 
-    public ParserEvent(int inputBpm, int inputInstrument, int inputVolume, int inputOctave){
-        final int FILLER_VALUE = 0;
+    public ParserEvent(int inputBpm, int inputInstrument, int inputVolume, int inputOctave, TypeEventParser inputEvent){
+        final int FILLER_VALUE = 1;
 
-        this.playableEvent = false;
+        this.typeEvent = inputEvent;
         this.octave = inputOctave;
-        this.note = FILLER_VALUE;
+        this.note = 0;
         this.duration = FILLER_VALUE;
         this.bpm = inputBpm;
         this.volume = inputVolume;
@@ -41,7 +36,7 @@ public class ParserEvent {
     }
 
     public ParserEvent(ParserEvent copy){
-        this.playableEvent = copy.playableEvent;
+        this.typeEvent = copy.typeEvent;
         this.octave = copy.octave;
         this.note = copy.note;
         this.duration = copy.duration;
@@ -53,8 +48,8 @@ public class ParserEvent {
 
 
 
-    public void definePlayable(boolean isPlayable){
-        this.playableEvent = isPlayable;
+    public void setTypeEvent(TypeEventParser type){
+        this.typeEvent = type;
     }
 
     public void setOctave(int octaveInput) { this.octave = octaveInput; }
@@ -76,7 +71,7 @@ public class ParserEvent {
     public void setVolume(long volume) { this.volume = volume; }
 
     //should be indexed into an ENUM for types of events (is currently in MusicEventClass)
-    public boolean isPlayableEvent(){ return this.playableEvent; }
+    public TypeEventParser getTypeEvent(){ return this.typeEvent; }
 
     public int getOctave(){
         return this.octave;

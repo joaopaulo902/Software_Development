@@ -15,14 +15,14 @@ public class Parser {
     private void createFunctionMap() {
         // preenchimento do mapa de implementações de MusicStrategy
         //default action
-        MusicStrategy defaultAction = (event) -> event.definePlayable(event.isPlayableEvent());
+        MusicStrategy defaultAction = (event) -> event.setTypeEvent(TypeEventParser.SILENCE);
 
         //Comportamento das notas (checar se tá bom dps)
         for (NoteEnum note : NoteEnum.values()) {
             final char c = note.getLabel();
             strategy.put(c, (event) -> {
                 event.setNote(note.getNote());
-                event.definePlayable(true);
+                event.setTypeEvent(TypeEventParser.NEW_NOTE);
             });
         }
 
@@ -39,49 +39,55 @@ public class Parser {
         //evento de tocar si bemol
         this.strategy.put('H', (event) -> {
             event.setNote(NoteEnum.NOTE_B.getNote() - 1);
-            event.definePlayable(true);
+            event.setTypeEvent(TypeEventParser.NEW_NOTE);
         });
 
         //increase octave event parameter alter
         this.strategy.put('?', (event) -> {
             event.setOctave(event.getOctave() + 1);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.GENERIC);
         });
         //decrease octave event parameter alter
         this.strategy.put('V', (event) -> {
             event.setOctave(event.getOctave() - 1);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.GENERIC);
         });
 
         //doubles volume and does wrap around if it reaches limit
         this.strategy.put(' ', (event) -> {
             event.setVolume((2 * event.getVolume()) % event.MIDI_SATURATION);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.GENERIC);
         });
 
         //increase bpm event parameter alter
         this.strategy.put('>', (event) -> {
             event.setBpm((event.getBpm() + event.BPM_VARIATION) % event.MIDI_SATURATION);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.NEW_BPM);
         });
 
         //decrease bpm event parameter alter
         this.strategy.put('<', (event) -> {
             long bpm = (event.getBpm() - event.BPM_VARIATION);
             event.setBpm(bpm > 0 ? bpm : event.getBpm());
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.NEW_BPM);
+        });
+
+        //set instrument to MIDI AGOGOGOGOGOGOGOGOGO
+        this.strategy.put(',', (event) ->{
+           event.setInstrument(event.MIDI_AGOGO);
+           event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //set instrument to MIDI Harmonica
         this.strategy.put('!', (event) -> {
             event.setInstrument(event.MIDI_HARMONICA);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //set instrument to MIDI BAGPIPES
         MusicStrategy bagpipesAction = (event) -> {
             event.setInstrument(event.MIDI_BAGPIPES);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         };
         this.strategy.put('I', bagpipesAction);
         this.strategy.put('O', bagpipesAction);
@@ -94,14 +100,14 @@ public class Parser {
             if (value % 2 == 0) {
                 this.strategy.put(c, (event) -> {
                     event.setInstrument((event.getInstrument() + value) % event.MIDI_SATURATION);
-                    event.definePlayable(false);
+                    event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
                 });
             }
             //set instrument to TUBULAR BELLS
             else {
                 this.strategy.put(c, (event) -> {
                     event.setInstrument(event.MIDI_TUBULAR_BELLS);
-                    event.definePlayable(false);
+                    event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
                 });
             }
         }
@@ -109,7 +115,7 @@ public class Parser {
         //set instrument to TUBULAR BELLS
         this.strategy.put(';', (event) -> {
             event.setInstrument(event.MIDI_TUBULAR_BELLS);
-            event.definePlayable(false);
+            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //default behaviour (if it wasn't a note don't play it, if it was, keep playing)
@@ -124,16 +130,19 @@ public class Parser {
         return entry.split(LINE_BREAK);
     }
 
-    private List<ParserEvent> createPartitura(LineInput line) {
+    private List<ParserEvent>createPartitura(LineInput line) {
         List<ParserEvent> sheet = new ArrayList<>();
-        ParserEvent currentState = new ParserEvent(line.BPM(), line.instrument(), line.volume(), line.octave());
+
+        //add 2 first parameters separately
+        ParserEvent currentState = new ParserEvent(line.BPM(), -1, line.volume(), line.octave(), TypeEventParser.NEW_BPM);
+        sheet.add(currentState);
+        currentState.setInstrument(line.instrument());
+        currentState.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
+        sheet.add(new ParserEvent(currentState));
 
         for (char c : line.text().toCharArray()) {
             processCharacter(c, currentState);
-
-            if (currentState.isPlayableEvent()) {
-                sheet.add(new ParserEvent(currentState));
-            }
+            sheet.add(new ParserEvent(currentState));
         }
         return sheet;
     }

@@ -2,7 +2,9 @@
 import javax.sound.midi.Track;
 import java.util.List;
 
-public class Channel {//to do handle exceptions
+//deals with individual channel
+
+public class Channel {
     //constantes
     public static final int CHANNEL_ERROR = -1;
 

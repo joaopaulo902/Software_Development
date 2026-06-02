@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+//saves text from front end to store in files
+
 public class LinesToFile {
 
     public void to_file(List<LineInput> line, String name){

@@ -1,3 +1,5 @@
+// enum for storing note values
+
 public enum NoteEnum {
     NOTE_C(0, 'C'),
     NOTE_D(2, 'D'),

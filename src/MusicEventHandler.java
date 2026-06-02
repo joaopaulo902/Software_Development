@@ -1,5 +1,7 @@
 import javax.sound.midi.*;
 
+// deals with java sound api
+
 public class MusicEventHandler {
     //constantes publicas
 

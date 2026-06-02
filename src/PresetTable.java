@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
+// presets list for iterating through 4 main values specified in requirements
+
 public class PresetTable {
     private record PresetLine (String text, String bpm, String volume, String instrument,String octave){}
     private final int NUMBER_DIFFERENT_PRESETS = 4;
-    public List<PresetLine> PRESETS = new ArrayList<>();
+    public final List<PresetLine> PRESETS = new ArrayList<>();
 
     PresetTable(){
         //add main voice

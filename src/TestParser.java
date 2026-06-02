@@ -1,5 +1,7 @@
 import java.util.List;
 
+
+//Testing class (Should be removed)
 public class TestParser {
 
     public static void functionality(List<LineInput> input){

@@ -1,3 +1,5 @@
+//manages music event types
+
 public class MusicEvent {//to do: handle out of bounds cases
     //constantes
     public static final int MAX_VALUE = 127;//define o maior valor dos campos

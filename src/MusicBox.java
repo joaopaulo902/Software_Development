@@ -4,10 +4,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+//responsible for storing and playing playable music
+
 public class MusicBox {
 
     public static final int RESOLUTION = 24;
 
+    public MusicBox(){
+        open();
+    }
 
     public void open(){
         maker = new MusicMaker();

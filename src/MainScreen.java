@@ -13,6 +13,8 @@ public class MainScreen extends JFrame{
     private final List<MusicLine> musicLinesList = new ArrayList<>();
     private static List<LineInput> presetTable = new ArrayList<>();
 
+    private MusicBox musicBoxFeed;
+
     public MainScreen(){
         initializeMainScreen();
         initializeMainScreenComponents();

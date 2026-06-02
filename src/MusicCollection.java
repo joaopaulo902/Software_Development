@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//deals with saving and loading files
 
 public class MusicCollection {
     public static List<String> view(){
