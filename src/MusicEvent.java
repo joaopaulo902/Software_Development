@@ -37,6 +37,10 @@ public class MusicEvent {//to do: handle out of bounds cases
         return bpm;
     }
 
+    public int get_instrument(){
+        return instrument;
+    }
+
     public double get_duration()
     {
         return duration;
@@ -99,6 +103,9 @@ public class MusicEvent {//to do: handle out of bounds cases
         duration = OUT_OF_BOUNDS;
     }
     private boolean bpm_is_right(int bpm){
+        if(bpm < 0){
+            return false;
+        }
         return true;
     }
     private boolean note_parameters_are_right(int note, int volume, double duration){

@@ -1,3 +1,4 @@
+import java.nio.file.Paths;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -5,6 +6,12 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args){
+        MusicBox player = new MusicBox();
+        player.open();
+        player.multi_line_test();
+
+
+        //String input = "[10] >>>A B C D E F G H";
         //load screen
         /*
         MainScreen screen = new MainScreen();

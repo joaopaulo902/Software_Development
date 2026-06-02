@@ -68,11 +68,18 @@ public class MusicEventHandler {
     private ShortMessage nova_mensagem_curta(MusicEvent musicEvent, int j_sound_comand){
         ShortMessage msg = new ShortMessage();
         try {
-            msg.setMessage(j_sound_comand, channel_number, musicEvent.get_note(), musicEvent.get_volume());
+            msg.setMessage(j_sound_comand, channel_number, select_note_or_inst(musicEvent), musicEvent.get_volume());
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
         return msg;
+    }
+
+    private int select_note_or_inst(MusicEvent musicEvent){
+        if(musicEvent.get_command() == MusicEvent.INSTRUMENT_CHANGE){
+            return musicEvent.get_instrument();
+        }
+        return musicEvent.get_note();
     }
 
 
