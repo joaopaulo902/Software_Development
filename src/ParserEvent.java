@@ -28,10 +28,11 @@ public class ParserEvent {
     private int instrument;
 
 
-    public ParserEvent(int inputBpm, int inputInstrument, int inputVolume){
+    public ParserEvent(int inputBpm, int inputInstrument, int inputVolume, int inputOctave){
         final int FILLER_VALUE = 0;
 
         this.playableEvent = false;
+        this.octave = inputOctave;
         this.note = FILLER_VALUE;
         this.duration = FILLER_VALUE;
         this.bpm = inputBpm;

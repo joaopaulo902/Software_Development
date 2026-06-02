@@ -118,6 +118,7 @@ public class Parser {
 
     }
 
+    //may not be useful in this context
     private String[] parseLines(String entry) {
         String LINE_BREAK = "\\R";
         return entry.split(LINE_BREAK);
@@ -125,7 +126,7 @@ public class Parser {
 
     private List<ParserEvent> createPartitura(LineInput line) {
         List<ParserEvent> sheet = new ArrayList<>();
-        ParserEvent currentState = new ParserEvent(line.BPM(), line.instrument(), line.Volume());
+        ParserEvent currentState = new ParserEvent(line.BPM(), line.instrument(), line.volume(), line.octave());
 
         for (char c : line.text().toCharArray()) {
             processCharacter(c, currentState);

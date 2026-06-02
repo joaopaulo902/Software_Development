@@ -22,8 +22,8 @@ No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. I
 | 1.  | O software deve ler o texto de entrada num campo texto na interface do software.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | **RF**           |
 | 2.  | O software deve interpretar caractere por caractere, aplicando as regras de mapeamento definidas na Tabela de Especificação dos Caracteres.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | **RF**           |
 | 3.  | O software deve gerar uma saída musical audível e reproduzível associada à entrada.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | **RF**           |
-| 4.  | O software deve ser configurável pelo usuário (ex: Volume, velocidade de reprodução, Instrumento inicial, Oitava, número de faixas de reprodução).                                                                                                                                                                                                                                                                                                                                                                                                                                                              | **RF**           |
-| 5.  | Deve ser possível salvar o texto e a configuração atual                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | **RF**           |
+| 4.  | O software deve ser configurável pelo usuário (ex: Volume, velocidade de reprodução(BPM), Instrumento inicial, Oitava, número de faixas de reprodução).                                                                                                                                                                                                                                                                                                                                                                                                                                                         | **RF**           |
+| 5.  | Deve ser possível salvar o texto atual                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | **RF**           |
 | 6.  | Deve ser possível pausar a reprodução da sequência                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | **RF**           |
 | 7.  | Deve ser possível terminar a execução do programa                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | **RF**           |  
 | 8.  | Deve ser possível especificar número de ticks de silêncio na forma [n]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | **RF**           |
@@ -69,7 +69,7 @@ No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. I
 
 ### Estrutura dos dados (Protótipo)
 ```
-//Classe restrita a receber dados de config das notas
+//Classe restrita a receber dados de config das notas (desatualizado)
 Public Class TrackConfig {
     public int volumeInicial;
     public int oitavaInicial;
@@ -79,6 +79,7 @@ Public Class TrackConfig {
 ```
 
 ```
+//desatualizado
 public class TrackPanelData {
     private JTextArea inputTexto;
     private JTextField campoBpm;
@@ -90,6 +91,7 @@ public class TrackPanelData {
 ```
 
 ```
+//desatualizado
 Public Class Song {
     private List<MusicBox> faixas;
     
@@ -114,6 +116,7 @@ Public Class Song {
 ```
 
 ```
+//desatualizado
 Public Class MusicBox {
     //painel de controle da MusicBox
     TrackConfig currentConfig;
@@ -143,6 +146,7 @@ Public Class MusicBox {
 ```
 
 ```
+//desatualizado
 Public Class Parser {
     private char ultimoCaractere;
     private Map <Caracter, estrategia> strategy = new HashMap<>(); //usa uma tabela hash de funções para facilitar o parse dos caracteres
@@ -162,11 +166,12 @@ Public Class Parser {
     }
 }
 ```
-
+**adicionar classes restantes e assinaturas
 
 ### OBSERVACOES SOBRE O CODIGO
  - notas bemois são sempre o valor da nota subtraídos de 1
  - o tamanho de uma oitava em midi é 12 notas (até wrap around na próxima oitava)
 
 ### Croqui da Interface
+**atualizar croqui
 ![Croqui](MainScreen.png)
