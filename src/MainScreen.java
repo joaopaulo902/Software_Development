@@ -1,3 +1,4 @@
+import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,12 +10,17 @@ public class MainScreen extends JFrame{
 
     private JScrollPane textScrollPane;
     private JPanel linesContainer;
-
     private final List<MusicLine> musicLinesList = new ArrayList<>();
+    private static List<LineInput> presetTable = new ArrayList<>();
 
     public MainScreen(){
         initializeMainScreen();
         initializeMainScreenComponents();
+        setPresetsList();
+    }
+
+    private void setPresetsList(){
+
     }
 
 
@@ -81,20 +87,30 @@ public class MainScreen extends JFrame{
 
         convertToMidiButton.addActionListener(e ->{
             System.out.println("converting to midi file");
-            saveText();
+            List<LineInput> lines = getAllLines(this.textScrollPane);
+            saveText(lines);
+            convertTextToMidi(lines);
 
         });
 
         return convertToMidiButton;
     }
+    private void convertTextToMidi(List<LineInput> allLines){
+        Parser parser = new Parser();
+        List<List<ParserEvent>> parserEvents = parser.parseFullMusic(allLines);
+        for (List<ParserEvent> parserEventList: parserEvents){
+            for(ParserEvent parserEvent: parserEventList){
+                System.out.println(parserEvent.getAbsoluteNote());
+            }
+        }
+    }
 
-    private void saveText(){
+    private void saveText(List<LineInput> allLines){
         System.out.println("saved progress");
-        List<LineInput> allLines = getAllLines(this.textScrollPane);
         for (LineInput line: allLines){
             System.out.println(line.text());
             System.out.println(line.BPM());
-            System.out.println(line.Volume());
+            System.out.println(line.volume());
             System.out.println(line.instrument());
         }
         //to do: implement way to connect with saving file
@@ -109,7 +125,7 @@ public class MainScreen extends JFrame{
 
         setMenuBarButtonParameters(saveButton);
 
-        saveButton.addActionListener(e -> saveText());
+        saveButton.addActionListener(e -> saveText(getAllLines(this.textScrollPane)));
 
         return saveButton;
     }
@@ -118,7 +134,6 @@ public class MainScreen extends JFrame{
         JButton addLineButton = new JButton("Add Line");
         setMenuBarButtonParameters(addLineButton);
 
-        // ADAPTAÇÃO: Ativando a ação de criar nova linha pelo menu
         addLineButton.addActionListener(e -> addNewLine());
 
         return addLineButton;
@@ -168,6 +183,7 @@ public class MainScreen extends JFrame{
 
         JPanel presetsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
+        //pegar info do field do array de presets
         presetsPanel.add(new JLabel("BPM:"));
         JTextField bpmInput = new JTextField("120", 3);
         presetsPanel.add(bpmInput);
@@ -180,8 +196,12 @@ public class MainScreen extends JFrame{
         JTextField instrumentInput = new JTextField("0", 3);
         presetsPanel.add(instrumentInput);
 
+        presetsPanel.add(new JLabel("Octave:"));
+        JTextField octaveInput = new JTextField("4", 3);
+        presetsPanel.add(octaveInput);
+
         //dataStructure for retrieval
-        MusicLine musicLine = new MusicLine(rowPanel, songInput, bpmInput, volumeInput, instrumentInput);
+        MusicLine musicLine = new MusicLine(rowPanel, songInput, bpmInput, volumeInput, instrumentInput, octaveInput);
         musicLinesList.add(musicLine);
 
 
@@ -190,7 +210,8 @@ public class MainScreen extends JFrame{
         deleteButton.setFocusPainted(false);
         deleteButton.addActionListener(e -> {
             linesContainer.remove(rowPanel);
-            musicLinesList.remove(musicLine); //removes line from MusicLine
+            musicLinesList.remove(musicLine);
+
             linesContainer.revalidate();
             linesContainer.repaint();
         });
@@ -212,7 +233,8 @@ public class MainScreen extends JFrame{
             int BPM = Integer.parseInt(line.bpmInput.getText());
             int volume = Integer.parseInt(line.volumeInput.getText());
             int instrument = Integer.parseInt(line.instrumentInput.getText());
-            LineInput lineValue = new LineInput(inputText, BPM, volume, instrument);
+            int octave = Integer.parseInt(line.octaveInput.getText());
+            LineInput lineValue = new LineInput(inputText, BPM, volume, instrument, octave);
             lineValues.add(lineValue);
         }
         return lineValues;

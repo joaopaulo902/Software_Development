@@ -6,10 +6,9 @@ public class Main {
 
     public static void main(String[] args){
         //load screen
-        /*
         MainScreen screen = new MainScreen();
         SwingUtilities.invokeLater(() -> screen.setVisible(true));
-        */
+
 
         //ps: shield user loading stuff outside of pipeline (load text -> convert text -> play song OR load midi file -> play midi file)
 
