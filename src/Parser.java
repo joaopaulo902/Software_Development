@@ -123,28 +123,25 @@ public class Parser {
         return entry.split(LINE_BREAK);
     }
 
-    private List<ParserEvent> createPartitura(String entry) {
-        List<ParserEvent> partitura = new ArrayList<>();
-        ParserEvent currentState = new ParserEvent();
+    private List<ParserEvent> createPartitura(LineInput line) {
+        List<ParserEvent> sheet = new ArrayList<>();
+        ParserEvent currentState = new ParserEvent(line.BPM(), line.instrument(), line.Volume());
 
-        for (char c : entry.toCharArray()) {
+        for (char c : line.text().toCharArray()) {
             processCharacter(c, currentState);
 
             if (currentState.isPlayableEvent()) {
-                partitura.add(new ParserEvent(currentState));
+                sheet.add(new ParserEvent(currentState));
             }
         }
-        return partitura;
+        return sheet;
     }
 
-    //adapt this guy to receive LineInput
-    public List<List<ParserEvent>> parseFullMusic(String entryText) {
+    public List<List<ParserEvent>> parseFullMusic(List<LineInput> lines) {
         List<List<ParserEvent>> completeSongEvents = new ArrayList<>();
 
-        String[] lines = parseLines(entryText);
-
-        for (String line : lines) {
-            if (!line.trim().isEmpty()) { // Ignore Blank Lines
+        for (LineInput line : lines) {
+            if (!line.text().trim().isEmpty()) { // Ignore Blank Lines
                 List<ParserEvent> events = createPartitura(line);
                 completeSongEvents.add(events);
             }

@@ -2,7 +2,7 @@ import java.util.List;
 
 public class TestParser {
 
-    public static void functionality(String input){
+    public static void functionality(List<LineInput> input){
         Parser parser = new Parser();
 
         List<List<ParserEvent>> song =  parser.parseFullMusic(input);
