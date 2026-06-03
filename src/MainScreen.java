@@ -1,28 +1,36 @@
 import javax.sound.sampled.Line;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+
+// note that a lot of "magic numbers" that you may see here are a symptom of frontend development, where most of the
+// size parameters are fine tuned to what looks good, so they don't have a real meaning behind them
 
 public class MainScreen extends JFrame{
     private final int SCREEN_WIDTH = 800;
     private final int SCREEN_HEIGHT = 720;
+    private final String textDirectoryPath = "Resources/Saved_Texts";
+    private final String sheetDirectoryPath = "Resources/Saved_Songs";
 
     private JScrollPane textScrollPane;
     private JPanel linesContainer;
+    private JPanel playPanel;
+
     private final List<MusicLine> musicLinesList = new ArrayList<>();
-    private static List<LineInput> presetTable = new ArrayList<>();
+    private PresetTable presetTable = new PresetTable();
 
     private MusicBox musicBoxFeed;
 
     public MainScreen(){
         initializeMainScreen();
         initializeMainScreenComponents();
-        setPresetsList();
-    }
-
-    private void setPresetsList(){
-
     }
 
 
@@ -38,7 +46,6 @@ public class MainScreen extends JFrame{
         this.linesContainer.setLayout(new BoxLayout(linesContainer, BoxLayout.Y_AXIS));
         setJMenuBar(createMenuBar());
         add(createWritingArea(), BorderLayout.CENTER);
-        //add(createSidebarPanel(), BorderLayout.EAST);
     }
 
     private JScrollPane createWritingArea(){
@@ -59,6 +66,8 @@ public class MainScreen extends JFrame{
         menuBar.add(createSaveButton());
         menuBar.add(createConvertToMidiButton());
         menuBar.add(createAddLineButton());
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(createPlayPanel());
 
         return menuBar;
     }
@@ -82,6 +91,33 @@ public class MainScreen extends JFrame{
         });
     }
 
+    private JPanel createPlayPanel(){
+        this.playPanel = new JPanel();
+        playPanel.setOpaque(false);
+        playPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+
+        JButton playButton = new JButton("▶ Play");
+        setMenuBarButtonParameters(playButton);
+        playButton.addActionListener( e ->{
+            if(playButton.getText().equals("▶ Play")){
+                playButton.setText("⏸ Pause");
+                //sequencia de tocar musica
+            }
+            else{
+                playButton.setText("▶ Play");
+                //sequencia de parar musica
+            }
+        });
+
+        JLabel playLabelFileName = new JLabel("No File in JukeBox...");
+
+
+        playPanel.add(playLabelFileName);
+        playPanel.add(playButton);
+
+        return playPanel;
+    }
+
     private JButton createConvertToMidiButton(){
         JButton convertToMidiButton = new JButton("Convert to Midi");
 
@@ -90,9 +126,7 @@ public class MainScreen extends JFrame{
         convertToMidiButton.addActionListener(e ->{
             System.out.println("converting to midi file");
             List<LineInput> lines = getAllLines(this.textScrollPane);
-            saveText(lines);
             convertTextToMidi(lines);
-
         });
 
         return convertToMidiButton;
@@ -100,26 +134,9 @@ public class MainScreen extends JFrame{
     private void convertTextToMidi(List<LineInput> allLines){
         Parser parser = new Parser();
         List<List<ParserEvent>> parserEvents = parser.parseFullMusic(allLines);
-        for (List<ParserEvent> parserEventList: parserEvents){
-            for(ParserEvent parserEvent: parserEventList){
-                System.out.println(parserEvent.getAbsoluteNote());
-            }
-        }
-    }
+        //fazer esquema de transformar em musica q eu fiz com o jordie hj
 
-    private void saveText(List<LineInput> allLines){
-        System.out.println("saved progress");
-        for (LineInput line: allLines){
-            System.out.println(line.text());
-            System.out.println(line.BPM());
-            System.out.println(line.volume());
-            System.out.println(line.instrument());
-        }
-        //to do: implement way to connect with saving file
-        //to do: implement way of collecting Song Presets
-
-        //System.out.println(sheet);
-    }
+   }
 
 
     private JButton createSaveButton(){
@@ -127,9 +144,54 @@ public class MainScreen extends JFrame{
 
         setMenuBarButtonParameters(saveButton);
 
-        saveButton.addActionListener(e -> saveText(getAllLines(this.textScrollPane)));
+        saveButton.addActionListener(e -> {
+
+            String fileName = JOptionPane.showInputDialog(
+                    this,
+                    "Digite o nome do arquivo:",
+                    "Salvar Arquivo",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+            if (fileName != null && !fileName.trim().isEmpty()) {
+                fileName = fileName.trim();
+                if (!fileName.toLowerCase().endsWith(".txt")) {
+                    fileName += ".txt";
+                    saveText(fileName, getAllLines(this.textScrollPane));
+                }
+            }
+
+
+        });
 
         return saveButton;
+    }
+
+
+
+    private void saveText(String fileName, List<LineInput> allLines){
+
+        for (LineInput line: allLines){
+            System.out.println(line.text());
+            System.out.println(line.BPM());
+            System.out.println(line.volume());
+            System.out.println(line.instrument());
+        }
+
+        File fileToSave = new File(textDirectoryPath, fileName);
+
+        try (FileWriter writer = new FileWriter(fileToSave, StandardCharsets.UTF_8)) {
+            for(LineInput line: allLines){
+                writer.write(line.text());
+                writer.write("\n");
+            }
+            JOptionPane.showMessageDialog(this, "Arquivo salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar arquivo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        //EXTRA: way to save and import song presets
+
+        //System.out.println(sheet);
     }
 
     private JButton createAddLineButton(){
@@ -148,14 +210,47 @@ public class MainScreen extends JFrame{
 
         importText.addActionListener(a ->{
             System.out.println("importing text");
-            // open new menu that shows a list of texts to import
+            FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Text Archives (*.txt)", "txt");
+            File inquiryResult = fileChooserSequence(textDirectoryPath, txtFilter);
+            if(inquiryResult != null ){
+                TextProcessor tp = new TextProcessor();
+                String textBuffer = tp.processFile(inquiryResult);
+
+                if (textBuffer != null && !textBuffer.trim().isEmpty()) {
+                    linesContainer.removeAll();
+                    musicLinesList.clear();
+
+                    String[] lines = textBuffer.split("\\r?\\n");
+
+                    int linesToImport = Math.min(lines.length, 16);
+
+
+                    for (int i = 0; i < linesToImport; i++) {
+                        createLine(lines[i]);
+                    }
+
+                    if (lines.length > 16) {
+                        JOptionPane.showMessageDialog(this,
+                                "O arquivo possui " + lines.length + " linhas, mas apenas as primeiras 16 foram importadas.",
+                                "Aviso de Limite", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                    linesContainer.revalidate();
+                    linesContainer.repaint();
+                }
+            }
         });
+
 
         JMenuItem importSheet = new JMenuItem("import sheet");
 
         importSheet.addActionListener(a ->{
             System.out.println("importing sheet");
-            // open new menu that shows a list of sheets to import
+            FileNameExtensionFilter midiFilter = new FileNameExtensionFilter("Midi Files (*.midi)", "midi");
+            File inquiryResult = fileChooserSequence(sheetDirectoryPath, midiFilter);
+            if(inquiryResult != null){
+                //da import na partitura a fazer
+            }
         });
 
 
@@ -168,44 +263,76 @@ public class MainScreen extends JFrame{
         return importMenu;
     }
 
+    private File fileChooserSequence(String directoryPath, FileNameExtensionFilter filter){
+        JFileChooser chooser = new JFileChooser(new File(directoryPath));
+
+        chooser.setDialogTitle("Select File For Importing");
+        chooser.setFileFilter(filter);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        int inquiryResult = chooser.showOpenDialog(null);
+
+        if(inquiryResult == JFileChooser.APPROVE_OPTION)
+            return chooser.getSelectedFile();
+
+        return null;
+    }
+
 
     private void addNewLine() {
-        JPanel rowPanel = new JPanel(new BorderLayout(10, 0)); //fix magic numbers
+        // Validação de limite para adições manuais
+        if (musicLinesList.size() >= 16) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Maximum limit (16) has been reached",
+                    "Limit Reached",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        LinePreset linePreset = presetTable.getPresetLine(musicLinesList.size());
+
+
+        createLine(linePreset.text());
+        linesContainer.revalidate();
+        linesContainer.repaint();
+    }
+
+    private void createLine(String textContent) {
+        int currentIndex = musicLinesList.size();
+        LinePreset linePreset = presetTable.getPresetLine(currentIndex);
+
+        JPanel rowPanel = new JPanel(new BorderLayout(10, 0));
         rowPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
-
-        //limits vertical size for row
         rowPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
 
-        JTextField songInput = new JTextField("input text here");
+        JTextField songInput = new JTextField(textContent);
         rowPanel.add(songInput, BorderLayout.CENTER);
-
 
         JPanel presetsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
-        //pegar info do field do array de presets
         presetsPanel.add(new JLabel("BPM:"));
-        JTextField bpmInput = new JTextField("120", 3);
+        JTextField bpmInput = new JTextField(linePreset.bpm(), 3);
         presetsPanel.add(bpmInput);
 
         presetsPanel.add(new JLabel("Vol:"));
-        JTextField volumeInput = new JTextField("100", 3);
+        JTextField volumeInput = new JTextField(linePreset.volume(), 3);
         presetsPanel.add(volumeInput);
 
         presetsPanel.add(new JLabel("Inst:"));
-        JTextField instrumentInput = new JTextField("0", 3);
+        JTextField instrumentInput = new JTextField(linePreset.instrument(), 3);
         presetsPanel.add(instrumentInput);
 
         presetsPanel.add(new JLabel("Octave:"));
-        JTextField octaveInput = new JTextField("4", 3);
+        JTextField octaveInput = new JTextField(linePreset.octave(), 3);
         presetsPanel.add(octaveInput);
 
-        //dataStructure for retrieval
         MusicLine musicLine = new MusicLine(rowPanel, songInput, bpmInput, volumeInput, instrumentInput, octaveInput);
         musicLinesList.add(musicLine);
-
 
         JButton deleteButton = new JButton("X");
         deleteButton.setForeground(Color.RED);
@@ -213,18 +340,13 @@ public class MainScreen extends JFrame{
         deleteButton.addActionListener(e -> {
             linesContainer.remove(rowPanel);
             musicLinesList.remove(musicLine);
-
             linesContainer.revalidate();
             linesContainer.repaint();
         });
         presetsPanel.add(deleteButton);
 
         rowPanel.add(presetsPanel, BorderLayout.EAST);
-
-        // Empilha no container principal e atualiza a tela
         linesContainer.add(rowPanel);
-        linesContainer.revalidate();
-        linesContainer.repaint();
     }
 
     public List<LineInput> getAllLines(JScrollPane scrollPane){

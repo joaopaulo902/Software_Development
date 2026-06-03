@@ -1,5 +1,12 @@
 # Software_Development
 Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS
+
+**aguenta um pouquinho q isso ja vira um readme de vdd
+
+observações:
+* O botão save só salva o texto da partitura do usuário. os presets precisam ser inseridos a cada import (se não serão os padrão)
+
+
 ### Propriedades do projeto
 No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. Isso ocorrerá de tal forma que, Linha 0 => Voz[0] e, assim, sucessivamente
  de tal forma que cada linha implicará em uma Voz independente de outra.

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.File;
 /**
     Generic processor for generating resources to be worked on by other classes
  */
@@ -11,13 +12,14 @@ public abstract class FileResourceProcessor<T> {
      */
     public T LoadFile(String fileName){
         Path path = Paths.get(fileName);
+
         try {
-            return processFile(path);
+            return processFile(path.toFile());
         } catch (Exception e) {
             System.err.println("Error Handling File " + fileName + ": " + e.getMessage());
             return null;
         }
     }
 
-    protected abstract T processFile(Path path) throws Exception;
+    protected abstract T processFile(File file);
 }
