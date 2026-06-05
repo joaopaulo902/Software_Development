@@ -11,12 +11,9 @@ public class ParserEvent {
     public final int MIDI_TUBULAR_BELLS = 15;
     public final int MIDI_AGOGO = 20;
 
-
-    //tipo de musicEvent
     private TypeEventParser typeEvent;
     private int octave;
     private int note;
-    //duração da nota
     private long duration;
     private long bpm;
     private long volume;

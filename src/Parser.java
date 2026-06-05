@@ -133,11 +133,12 @@ public class Parser {
     private List<ParserEvent>createPartitura(LineInput line) {
         List<ParserEvent> sheet = new ArrayList<>();
 
-        //add 2 first parameters separately
-        ParserEvent currentState = new ParserEvent(line.BPM(), -1, line.volume(), line.octave(), TypeEventParser.NEW_BPM);
-        sheet.add(currentState);
-        currentState.setInstrument(line.instrument());
-        currentState.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
+        //add 2 first parameters separately instrument then bpm
+        ParserEvent currentState = new ParserEvent(-1, line.instrument(), line.volume(), line.octave(), TypeEventParser.NEW_INSTRUMENT);
+        sheet.add(new ParserEvent(currentState));
+        currentState.setBpm(line.BPM());
+        currentState.setTypeEvent(TypeEventParser.NEW_BPM);
+
         sheet.add(new ParserEvent(currentState));
 
         for (char c : line.text().toCharArray()) {

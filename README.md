@@ -2,6 +2,8 @@
 Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS
 
 **aguenta um pouquinho q isso ja vira um readme de vdd
+botao salvar só atualiza quando user para de fazer modificações
+
 
 observações:
 * O botão save só salva o texto da partitura do usuário. os presets precisam ser inseridos a cada import (se não serão os padrão)

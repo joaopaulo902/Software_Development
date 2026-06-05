@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 public class ParserToMusicEvent {
 
-    public List<List<MusicEvent>> musicEventsCreator(List<List<ParserEvent>> parserEvents){
+    public static List<List<MusicEvent>> createMusicEvents(List<List<ParserEvent>> parserEvents){
         List<List<MusicEvent>> musicEvents = new LinkedList<>();
 
         for(List<ParserEvent> eventList: parserEvents){
@@ -19,7 +19,7 @@ public class ParserToMusicEvent {
         return musicEvents;
     }
 
-    private MusicEvent translate(ParserEvent parserEvent){
+    private static MusicEvent translate(ParserEvent parserEvent){
         MusicEvent currentEvent = new MusicEvent();
         switch(parserEvent.getTypeEvent()){
             case TypeEventParser.NEW_BPM:
@@ -32,7 +32,7 @@ public class ParserToMusicEvent {
                 currentEvent.new_silence(parserEvent.getDuration());
                 break;
             case TypeEventParser.NEW_NOTE:
-                currentEvent.new_note( parserEvent.getNote(),(int) parserEvent.getVolume(), parserEvent.getDuration());
+                currentEvent.new_note( parserEvent.getAbsoluteNote(),(int) parserEvent.getVolume(), parserEvent.getDuration());
                 break;
 
 

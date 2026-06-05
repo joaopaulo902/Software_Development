@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class MusicCollection {
     public static List<String> view(){
         List<String>songs = new LinkedList<>();
-        try (Stream<Path> paths = Files.list(Paths.get(DIRECTORY_PATH))) {
+        try (Stream<Path> paths = Files.list(Paths.get(DirectoryPath.MIDIPATH.path))) {
             songs = paths
                     .filter(Files::isRegularFile) // Filters out subdirectories
                     .map(Path::getFileName)
@@ -27,46 +27,50 @@ public class MusicCollection {
         }
         return songs;
     }
-    public static void save(Sequence to_save, String name, List<Path> text_files){
-        Path texts = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
-        try {
+
+    public static void save(Sequence to_save, String name/*, List<Path> text_files*/){
+        /*Path texts = Paths.get(DirectoryPath.TXTPATH.path + name);
+       try {
             Files.createDirectories(texts);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
         int[] temp = MidiSystem.getMidiFileTypes(to_save);
         int save_type = temp[0];
-        File old_file = new File(DIRECTORY_PATH +name+".midi");
+        File old_file = new File(DirectoryPath.MIDIPATH.path +name+".midi");
         old_file.delete();
-        File out_file = new File(DIRECTORY_PATH +name+".midi");
+        File out_file = new File(DirectoryPath.MIDIPATH.path +name+".midi");
         try {
             MidiSystem.write(to_save, save_type, out_file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        save_txts(name, text_files);
+
+        //save_txts(name, text_files);
     }
-    public static Sequence load_song(String name){
-        File song = new File(DIRECTORY_PATH +name+".midi");
-        if(!song.canRead()){
-            Sequencer helper;
+
+    public static Sequence load_song(String name) {
+        File song = new File(name);
+
+
+        if (!song.exists() || !song.canRead()) {
             try {
-                helper = MidiSystem.getSequencer();
-            } catch (MidiUnavailableException e) {
-                throw new RuntimeException(e);
+                return new Sequence(Sequence.PPQ, 24);
+            } catch (InvalidMidiDataException e) {
+                throw new RuntimeException("Failed to create a new blank Sequence.", e);
             }
-            return helper.getSequence();
         }
+
         try {
             return MidiSystem.getSequence(song);
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidMidiDataException | IOException e) {
+            throw new RuntimeException("Failed to load MIDI file: " + name, e);
         }
     }
+
     public static void load_texts(String name, Path work_directory){
-        Path texts = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
+        Path texts = Paths.get(DirectoryPath.TXTPATH.path + name);
         List<Path> text_files;
         try (Stream<Path> stream = Files.walk(texts)){
             text_files = stream
@@ -91,13 +95,13 @@ public class MusicCollection {
         if (name.equals(EXAMPLE_SONG)){
             return;
         }
-        Path old_file = Paths.get(DIRECTORY_PATH +name+".midi");
+        Path old_file = Paths.get(DirectoryPath.MIDIPATH.path +name+ ".midi");
         try {
             Files.delete(old_file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Path old_directory = Paths.get(DIRECTORY_PATH + name + TEXT_DIRECTORY);
+        Path old_directory = Paths.get(DirectoryPath.TXTPATH.path + name);
         try (Stream<Path> stream = Files.walk(old_directory)){
             stream.sorted(Comparator.reverseOrder())
                     .forEach(text_file -> {
@@ -129,10 +133,9 @@ public class MusicCollection {
         }
     }
     private static String text_path(String name, int track_number){
-        return DIRECTORY_PATH +name+ TEXT_DIRECTORY + "/" + name + "_" + String.valueOf(track_number) + ".txt";
+        return DirectoryPath.TXTPATH.path +name + "/" + name + "_" + String.valueOf(track_number) + ".txt";
     }
 
+
     private static final String EXAMPLE_SONG = "Sgt_Pepper";
-    private static final String DIRECTORY_PATH = "Saved_songs/";
-    private static final String TEXT_DIRECTORY = "_texts";
 }

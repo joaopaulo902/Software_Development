@@ -83,21 +83,25 @@ public class MusicBox {
         sequencer.stop();
     }
 
+    public void reset(){
+        sequencer.setTickPosition(0);
+    }
+
     public List<String> view_saved(){
         return MusicCollection.view();
     }
 
-    public void save(String name, List<Path> text_files){
-        MusicCollection.save(sequence, name, text_files);
+    public void save(String name/*, List<Path> text_files*/){
+        MusicCollection.save(sequence, name/*, text_files*/);
     }
 
     public void delete(String name){
         MusicCollection.delete(name);
     }
 
-    public void load_saved(String name, Path work_directory){
+    public void load_saved(String name/*, Path work_directory*/){
         sequence = MusicCollection.load_song(name);
-        MusicCollection.load_texts(name, work_directory);
+        //MusicCollection.load_texts(name, work_directory);
     }
 
 
@@ -121,7 +125,7 @@ public class MusicBox {
         test_ending(test_events);
         write_line(test_events, 0);
         play();
-        save(TEST_SAVE, null);
+        save(TEST_SAVE/*, null*/);
     }
     private int random_correct_number(){
         Random number_gen = new Random();
@@ -140,7 +144,7 @@ public class MusicBox {
             write_line(test_events, i);
         }
         play();
-        save(TEST_SAVE, null);
+        save(TEST_SAVE/*, null*/);
     }
     private List<MusicEvent> line_builder(List<MusicEvent> test_events){
         MusicEvent first_instrument = new MusicEvent();
@@ -174,6 +178,8 @@ public class MusicBox {
             test_events.add(note);
         }
     }
+
+
 
     private final int NUMBER_OF_TEST_LINES = 6;
     private final int CORRECT_LIMIT = 128;
