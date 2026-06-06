@@ -1,6 +1,6 @@
 # Software_Development
 Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS
-
+(*) Para mais informações sobre implementação e ideias do código, consultar wiki
 
 observações:
 
