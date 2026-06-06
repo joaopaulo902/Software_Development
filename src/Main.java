@@ -28,7 +28,7 @@ public class Main {
         // load file tester (can only be added to frontend)
         /*
         TextProcessor testFileContents = new TextProcessor();
-        String input = testFileContents.LoadFile("test.txt");
+        String input = testFileContents.LoadFile("Resources/Saved_Texts/test.txt");
         */
 
         //parsing action tester
