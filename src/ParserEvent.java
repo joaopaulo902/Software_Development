@@ -1,15 +1,16 @@
-import java.lang.reflect.Type;
 
 public class ParserEvent {
     //size of an octave including midi halfNotes
-    public final int OCTAVE_SIZE = 12;
-    public final int BPM_VARIATION = 10;
-    public final int MIDI_SATURATION = 127;
+    public static final int OCTAVE_SIZE = 12;
+    public static final int BPM_VARIATION = 10;
+    public static final int MIDI_SATURATION = 127;
+    public static final int MAX_OCTAVE = 9;
 
-    public final int MIDI_HARMONICA = 22;
-    public final int MIDI_BAGPIPES = 110;
-    public final int MIDI_TUBULAR_BELLS = 15;
-    public final int MIDI_AGOGO = 20;
+    public static final int MIDI_HARMONICA = 22;
+    public static final int MIDI_BAGPIPES = 110;
+    public static final int MIDI_TUBULAR_BELLS = 15;
+    public static final int MIDI_AGOGO = 20;
+    public static final int MIDI_PIANO = 0;
 
     private TypeEventParser typeEvent;
     private int octave;
@@ -55,9 +56,9 @@ public class ParserEvent {
         this.note = noteInput;
     }
 
-    public void setDuration(long inputDuration) {
+    /*public void setDuration(long inputDuration) {
         this.duration = inputDuration;
-    }
+    }*/
 
     public void setBpm (long inputBpm) {
         this.bpm = inputBpm;
@@ -74,9 +75,9 @@ public class ParserEvent {
         return this.octave;
     }
 
-    public int getNote(){
+    /*public int getNote(){
         return this.note;
-    }
+    }*/
 
     public int getAbsoluteNote () {
         return (OCTAVE_SIZE * this.octave) + this.note;
@@ -89,10 +90,4 @@ public class ParserEvent {
     public long getVolume() { return this.volume; }
 
     public int getInstrument(){ return this.instrument; }
-
-
-    public ParserEvent getEvent() {
-        return this;
-    }
-
 }

@@ -1,5 +1,4 @@
 import javax.sound.midi.*;
-import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -64,16 +63,32 @@ public class MusicBox {
     }
 
     public void play(){
-        if (!open_it_is || maker.is_empty()){
+        System.out.println("[DEBUG] Método play() foi acionado.");
+        System.out.println("[DEBUG] open_it_is: " + open_it_is);
+        System.out.println("[DEBUG] maker.is_empty(): " + maker.is_empty());
+
+        if (sequence != null) {
+            System.out.println("[DEBUG] Duração da Sequence em Ticks: " + sequence.getTickLength());
+        } else {
+            System.out.println("[DEBUG] A Sequence está NULL!");
+        }
+
+        if (!open_it_is || (maker.is_empty() && (sequence == null || sequence.getTickLength() == 0))){
+            System.out.println("[DEBUG] Bloqueado na condição de guarda! Código não vai tocar.");
             return;
         }
+
         try {
             sequencer.setSequence(sequence);
+            System.out.println("[DEBUG] Sequence atribuída ao sequencer com sucesso.");
         }
         catch (InvalidMidiDataException e) {
+            System.out.println("[DEBUG] Erro crítico ao atribuir a Sequence.");
             e.printStackTrace();
         }
+
         sequencer.start();
+        System.out.println("[DEBUG] sequencer.start() executado. Está rodando? " + sequencer.isRunning());
     }
 
     public void pause(){
@@ -101,6 +116,9 @@ public class MusicBox {
 
     public void load_saved(String name/*, Path work_directory*/){
         sequence = MusicCollection.load_song(name);
+        if (maker != null && sequence != null) {
+            maker.open(sequence.getTracks());
+        }
         //MusicCollection.load_texts(name, work_directory);
     }
 
@@ -137,22 +155,21 @@ public class MusicBox {
         bpm.new_bpm(initial_bpm);
         for(int i =0; i < NUMBER_OF_TEST_LINES; i++){
             List<MusicEvent> test_events = new LinkedList<>();
-            MusicEvent bpm_copy = new MusicEvent();
+            MusicEvent bpm_copy;
             bpm_copy = bpm;
             test_events.add(bpm_copy);
-            test_events = line_builder(test_events);
+            line_builder(test_events);
             write_line(test_events, i);
         }
         play();
         save(TEST_SAVE/*, null*/);
     }
-    private List<MusicEvent> line_builder(List<MusicEvent> test_events){
+    private void line_builder(List<MusicEvent> test_events){
         MusicEvent first_instrument = new MusicEvent();
         first_instrument.new_instrument(random_correct_number());
         System.out.println("Initial instrument:" + first_instrument.get_instrument());
         test_events.add(first_instrument);
         test_ending(test_events);
-        return test_events;
     }
 
     private void test_ending(List<MusicEvent> test_events) {

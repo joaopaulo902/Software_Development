@@ -6,6 +6,13 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args){
+        MainScreen screen = new MainScreen();
+        SwingUtilities.invokeLater(() -> screen.setVisible(true));
+
+
+
+        // component testing
+
         //MusicBox player = new MusicBox();
         //player.open();
         //player.multi_line_test();
@@ -13,8 +20,7 @@ public class Main {
 
         //String input = "[10] >>>A B C D E F G H";
         //load screen
-        MainScreen screen = new MainScreen();
-        SwingUtilities.invokeLater(() -> screen.setVisible(true));
+
 
 
         //ps: shield user loading stuff outside of pipeline (load text -> convert text -> play song OR load midi file -> play midi file)

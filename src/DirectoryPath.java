@@ -2,7 +2,7 @@ public enum DirectoryPath {
     TXTPATH("Resources/Saved_Text/"),
     MIDIPATH("Resources/Saved_Songs/");
 
-    String path;
+    public final String path;
 
     DirectoryPath(String input){
         this.path = input;

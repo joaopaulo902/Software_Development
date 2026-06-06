@@ -17,21 +17,19 @@ public class MusicEventHandler {
         if (!started) {
             return 0;
         }
-        switch (musicEvent.get_command()){
-            case MusicEvent.INSTRUMENT_CHANGE:
+        return switch (musicEvent.get_command()) {
+            case MusicEvent.INSTRUMENT_CHANGE -> {
                 treat_instrument(musicEvent, when);
-                return when;
-            case MusicEvent.BPM_CHANGE:
+                yield when;
+            }
+            case MusicEvent.BPM_CHANGE -> {
                 treat_bpm(musicEvent, when);
-                return when;
-            case MusicEvent.SILENCE:
-                return treat_silence(musicEvent.get_duration(), when);
-            case MusicEvent.NEW_NOTE:
-
-                return treat_nota(musicEvent, when);
-            default:
-                return when;
-        }
+                yield when;
+            }
+            case MusicEvent.SILENCE -> treat_silence(musicEvent.get_duration(), when);
+            case MusicEvent.NEW_NOTE -> treat_nota(musicEvent, when);
+            default -> when;
+        };
     }
 
     //metodos privados
@@ -40,7 +38,7 @@ public class MusicEventHandler {
     }
 
     private void treat_bpm(MusicEvent musicEvent, long when){
-        int mpq = (int)(CONVERSION/musicEvent.get_bpm());
+        int mpq = (CONVERSION/musicEvent.get_bpm());
         int msg_size = 3;
         byte[] tempo = new byte[msg_size];
         tempo[0] = (byte) ((mpq >> 16) & 0xFF);

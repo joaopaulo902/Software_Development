@@ -1,14 +1,12 @@
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //deals with saving and loading files
@@ -21,7 +19,7 @@ public class MusicCollection {
                     .filter(Files::isRegularFile) // Filters out subdirectories
                     .map(Path::getFileName)
                     .map(Path::toString)
-                    .collect(Collectors.toUnmodifiableList());
+                    .toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,28 +67,6 @@ public class MusicCollection {
         }
     }
 
-    public static void load_texts(String name, Path work_directory){
-        Path texts = Paths.get(DirectoryPath.TXTPATH.path + name);
-        List<Path> text_files;
-        try (Stream<Path> stream = Files.walk(texts)){
-            text_files = stream
-                    .filter(Files::isRegularFile)
-                    .collect(Collectors.toUnmodifiableList());
-        } catch (IOException e) {
-            return;
-        }
-        work_directory = Path.of(work_directory + name + "_");
-        int i = 0;
-        for (Path txt : text_files){
-            Path output = Paths.get(work_directory + String.valueOf(i));
-            try {
-                Files.copy(output, txt, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            i++;
-        }
-    }
     public static void delete(String name){
         if (name.equals(EXAMPLE_SONG)){
             return;
@@ -114,26 +90,6 @@ public class MusicCollection {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    private static void save_txts(String name, List<Path> text_files){
-        if (text_files == null){
-            return;
-        }
-        int i = 0;
-        for(Path txt : text_files){
-            Path output = Paths.get(text_path(name, i));
-            try {
-                Files.copy(output, txt, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            i++;
-        }
-    }
-    private static String text_path(String name, int track_number){
-        return DirectoryPath.TXTPATH.path +name + "/" + name + "_" + String.valueOf(track_number) + ".txt";
     }
 
 

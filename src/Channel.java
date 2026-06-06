@@ -9,13 +9,13 @@ public class Channel {
     public static final int CHANNEL_ERROR = -1;
 
     //metodos publicos
-    public void open(int id, Track track)
-    {
+    public void open(int id, Track track) {
         this.track = track;
         channel_number = id;
         is_open = true;
         tick = 0;
-        clear_faixa();
+
+        used = this.track != null && this.track.size() > 0;
     }
     public void close()
     {
@@ -26,15 +26,18 @@ public class Channel {
     }
     public void set_eventos(List<MusicEvent> musicEventList)
     {
-        MusicEventHandler tratador = new MusicEventHandler();
-        tratador.start(track, channel_number);
-        tick = 0;
-        if (!is_open){
+        if (!is_open || track == null) {
             return;
         }
+
         if (musicEventList.isEmpty()) {
             return;
         }
+
+        MusicEventHandler tratador = new MusicEventHandler();
+        tratador.start(track, channel_number);
+        tick = 0;
+
         for (MusicEvent evento : musicEventList) {
             tick = tratador.treatment(evento, tick);
         }
@@ -44,14 +47,19 @@ public class Channel {
     {
         return used;
     }
+
     public void clear_faixa()
     {
+        if (track == null) {
+            used = false;
+            return;
+        }
+
         for(int i = track.size() -  1; i >= 0; i--){
             track.remove(track.get(i));
         }
         used = false;
     }
-
     //Variaveis privadas
     private int channel_number;
     private Track track;

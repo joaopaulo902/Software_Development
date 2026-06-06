@@ -7,7 +7,7 @@ public enum TypeEventParser {
     NEW_NOTE(3),
     GENERIC(-1);
 
-    private int value;
+    private final int value;
 
     TypeEventParser(int i) {
         this.value = i;

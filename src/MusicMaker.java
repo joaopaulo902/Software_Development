@@ -11,9 +11,17 @@ public class MusicMaker {
     public void open(Track[] tracks)
     {
         channels = new Channel[NUMBER_OF_TRACKS];
+        empty_it_is = true;
+
         for(int i = 0; i < NUMBER_OF_TRACKS; i++){
             channels[i] = new Channel();
-            channels[i].open(i, tracks[i]);
+            if (i < tracks.length) {
+                channels[i].open(i, tracks[i]);
+
+                if (channels[i].in_use()) {
+                    empty_it_is = false;
+                }
+            }
         }
         is_open = true;
     }

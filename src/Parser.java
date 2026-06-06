@@ -21,7 +21,12 @@ public class Parser {
         for (NoteEnum note : NoteEnum.values()) {
             final char c = note.getLabel();
             strategy.put(c, (event) -> {
-                event.setNote(note.getNote());
+                if(this.lastCharacter == 'b' && (note.getLabel() != 'C' && note.getLabel() != 'F')){
+                    event.setNote(note.getNote() - 1);
+                }
+                else {
+                    event.setNote(note.getNote());
+                }
                 event.setTypeEvent(TypeEventParser.NEW_NOTE);
             });
         }
@@ -44,24 +49,30 @@ public class Parser {
 
         //increase octave event parameter alter
         this.strategy.put('?', (event) -> {
-            event.setOctave(event.getOctave() + 1);
+            int octave = event.getOctave() + 1;
+            event.setOctave(octave <= event.MAX_OCTAVE ? octave : event.MAX_OCTAVE);
             event.setTypeEvent(TypeEventParser.GENERIC);
         });
         //decrease octave event parameter alter
         this.strategy.put('V', (event) -> {
-            event.setOctave(event.getOctave() - 1);
+            int octave = event.getOctave() - 1;
+            event.setOctave(octave >= 0 ? octave : 0);
             event.setTypeEvent(TypeEventParser.GENERIC);
         });
 
         //doubles volume and does wrap around if it reaches limit
         this.strategy.put(' ', (event) -> {
-            event.setVolume((2 * event.getVolume()) % event.MIDI_SATURATION);
+            final int SATURATION = 100;
+            long newVolume = 2 * event.getVolume();
+
+            event.setVolume((newVolume <= SATURATION) ? newVolume : SATURATION);
             event.setTypeEvent(TypeEventParser.GENERIC);
         });
 
         //increase bpm event parameter alter
         this.strategy.put('>', (event) -> {
-            event.setBpm((event.getBpm() + event.BPM_VARIATION) % event.MIDI_SATURATION);
+            long bpm = (event.getBpm() + event.BPM_VARIATION);
+            event.setBpm( bpm > 0 ? bpm : Integer.MAX_VALUE);
             event.setTypeEvent(TypeEventParser.NEW_BPM);
         });
 
@@ -112,6 +123,11 @@ public class Parser {
             }
         }
 
+        this.strategy.put('b', (event)->{
+            this.lastCharacter = 'b';
+            event.setTypeEvent(TypeEventParser.GENERIC);
+        });
+
         //set instrument to TUBULAR BELLS
         this.strategy.put(';', (event) -> {
             event.setInstrument(event.MIDI_TUBULAR_BELLS);
@@ -124,29 +140,13 @@ public class Parser {
 
     }
 
-    //may not be useful in this context
+/*    //may not be useful in this context since text is imported as LineInput
     private String[] parseLines(String entry) {
         String LINE_BREAK = "\\R";
         return entry.split(LINE_BREAK);
-    }
+    }*/
 
-    private List<ParserEvent>createPartitura(LineInput line) {
-        List<ParserEvent> sheet = new ArrayList<>();
 
-        //add 2 first parameters separately instrument then bpm
-        ParserEvent currentState = new ParserEvent(-1, line.instrument(), line.volume(), line.octave(), TypeEventParser.NEW_INSTRUMENT);
-        sheet.add(new ParserEvent(currentState));
-        currentState.setBpm(line.BPM());
-        currentState.setTypeEvent(TypeEventParser.NEW_BPM);
-
-        sheet.add(new ParserEvent(currentState));
-
-        for (char c : line.text().toCharArray()) {
-            processCharacter(c, currentState);
-            sheet.add(new ParserEvent(currentState));
-        }
-        return sheet;
-    }
 
     public List<List<ParserEvent>> parseFullMusic(List<LineInput> lines) {
         List<List<ParserEvent>> completeSongEvents = new ArrayList<>();
@@ -160,6 +160,51 @@ public class Parser {
         return completeSongEvents;
     }
 
+    private List<ParserEvent>createPartitura(LineInput line) {
+        List<ParserEvent> sheet = new ArrayList<>();
+
+        //add 2 first parameters separately instrument then bpm
+        ParserEvent currentState = new ParserEvent(-1, line.instrument(), line.volume(), line.octave(), TypeEventParser.NEW_INSTRUMENT);
+        sheet.add(new ParserEvent(currentState));
+        currentState.setBpm(line.BPM());
+        currentState.setTypeEvent(TypeEventParser.NEW_BPM);
+        sheet.add(new ParserEvent(currentState));
+        String text = line.text();
+        int startIndex = 0;
+
+        if (text.startsWith("[")) {
+            int closeBracketIndex = text.indexOf("]");
+
+
+            if (closeBracketIndex > 1) {
+                try {
+                    String numberStr = text.substring(1, closeBracketIndex);
+                    int silenceCount = Integer.parseInt(numberStr);
+
+                    char silenceChar = '`';
+
+                    for (int i = 0; i < silenceCount; i++) {
+                        processCharacter(silenceChar, currentState);
+                        sheet.add(new ParserEvent(currentState));
+                    }
+
+                    startIndex = closeBracketIndex + 1;
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Ignoring silent command: invalid content within brackets");
+                }
+            }
+        }
+
+        char[] chars = text.toCharArray();
+        for (int i = startIndex; i < chars.length; i++) {
+            processCharacter(chars[i], currentState);
+            sheet.add(new ParserEvent(currentState));
+            this.lastCharacter = chars[i];
+        }
+        return sheet;
+    }
+
     private void processCharacter(char c, ParserEvent event) {
 
         MusicStrategy action = this.strategy.getOrDefault(c, strategy.get('`'));
@@ -168,6 +213,6 @@ public class Parser {
             action.apply(event);
         }
 
-        this.lastCharacter = c;
+        //this.lastCharacter = c;
     }
 }

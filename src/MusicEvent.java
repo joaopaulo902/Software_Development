@@ -105,10 +105,7 @@ public class MusicEvent {//to do: handle out of bounds cases
         duration = OUT_OF_BOUNDS;
     }
     private boolean bpm_is_right(int bpm){
-        if(bpm < 0){
-            return false;
-        }
-        return true;
+        return bpm >= 0;
     }
     private boolean note_parameters_are_right(int note, int volume, double duration){
         if(note > MAX_VALUE || note < 0){
@@ -117,21 +114,12 @@ public class MusicEvent {//to do: handle out of bounds cases
         if(volume > MAX_VALUE || volume < 0){
             return false;
         }
-        if(duration > FULL_NOTE || duration < THIRTY_SECOND_NOTE){
-            return false;
-        }
-        return true;
+        return !(duration > FULL_NOTE) && !(duration < THIRTY_SECOND_NOTE);
     }
     private boolean duration_is_right(double duration){
-        if(duration > FULL_NOTE || duration < THIRTY_SECOND_NOTE){
-            return false;
-        }
-        return true;
+        return !(duration > FULL_NOTE) && !(duration < THIRTY_SECOND_NOTE);
     }
     private boolean instrument_is_right(int instrument){
-        if(instrument > MAX_VALUE || instrument < 0){
-            return false;
-        }
-        return true;
+        return instrument <= MAX_VALUE && instrument >= 0;
     }
 }

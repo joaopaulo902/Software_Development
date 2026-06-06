@@ -20,6 +20,7 @@ public class MainScreen extends JFrame {
     private static final String SHEET_DIR = "Resources/Saved_Songs";
     private static final String PLAY_TEXT = "▶ Play";
     private static final String PAUSE_TEXT = "⏸ Pause";
+    private final int ROCK_MUSIC_BPM = 120;
 
     private final List<MusicLine> musicLinesList = new ArrayList<>();
     private final PresetTable presetTable = new PresetTable();
@@ -33,6 +34,7 @@ public class MainScreen extends JFrame {
     private MusicBox musicBoxFeed;
     private String currentSongName;
     private boolean isUpToDate = false;
+    private int globalBpm = ROCK_MUSIC_BPM;
 
     public MainScreen() {
         this.musicBoxFeed = new MusicBox();
@@ -70,10 +72,51 @@ public class MainScreen extends JFrame {
         menuBar.add(createMenuButton("Convert to Midi", e -> handleConvertToMidi()));
         menuBar.add(createMenuButton("Add Line", e -> addNewLine()));
         menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(createBpmPanel());
         menuBar.add(createPlayPanel());
 
         return menuBar;
     }
+    private JPanel createBpmPanel(){
+        JPanel bpmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        bpmPanel.setOpaque(false);
+
+        playLabel = new JLabel("BPM:");
+        JTextField bpmInput = new JTextField(String.valueOf(ROCK_MUSIC_BPM), 4);
+        Runnable atualizarBpm = () -> {
+            try {
+                int newBpm = Integer.parseInt(bpmInput.getText().trim());
+                if (newBpm > 0) {
+                    this.globalBpm = newBpm;
+                    this.isUpToDate = false;
+                    System.out.println("[DEBUG] globalBpm atualizado para: " + this.globalBpm);
+                } else {
+                    bpmInput.setText(String.valueOf(this.globalBpm));
+                }
+            } catch (NumberFormatException e) {
+
+                bpmInput.setText(String.valueOf(this.globalBpm));
+            }
+        };
+
+        bpmInput.addActionListener(e -> atualizarBpm.run());
+
+
+        bpmInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                atualizarBpm.run();
+            }
+        });
+
+        // Coloca os componentes dentro do container de retorno
+        bpmPanel.add(playLabel);
+        bpmPanel.add(bpmInput);
+
+        bpmPanel.setMaximumSize(bpmPanel.getPreferredSize());
+        return bpmPanel;
+    }
+
 
     private JButton createMenuButton(String text, java.awt.event.ActionListener action) {
         JButton button = new JButton(text);
@@ -117,6 +160,8 @@ public class MainScreen extends JFrame {
         playPanel.add(playButton);
         playPanel.add(resetButton);
 
+
+        playPanel.setMaximumSize(playPanel.getPreferredSize());
         return playPanel;
     }
 
@@ -189,11 +234,15 @@ public class MainScreen extends JFrame {
             }
             refreshLinesContainer();
         }
+        isUpToDate = false;
     }
 
     private void importSheetFile() {
         File file = chooseFile(SHEET_DIR, new FileNameExtensionFilter("Midi Files (*.midi)", "midi"));
-        if (file == null) return;
+        if (file == null) {
+            System.out.println("no file");
+            return;
+        }
 
         if (musicBoxFeed != null) {
             musicBoxFeed.close();
@@ -317,16 +366,16 @@ public class MainScreen extends JFrame {
         songInput.addFocusListener(createModificationListener());
         rowPanel.add(songInput, BorderLayout.CENTER);
 
-        JTextField bpmInput = createInputField(preset.bpm());
+
         JTextField volumeInput = createInputField(preset.volume());
         JTextField instrumentInput = createInputField(preset.instrument());
         JTextField octaveInput = createInputField(preset.octave());
 
-        MusicLine musicLine = new MusicLine(rowPanel, songInput, bpmInput, volumeInput, instrumentInput, octaveInput);
+        MusicLine musicLine = new MusicLine(rowPanel, songInput, volumeInput, instrumentInput, octaveInput);
         musicLinesList.add(musicLine);
 
         JButton deleteButton = createDeleteButton(rowPanel, musicLine);
-        JPanel presetsPanel = buildPresetsPanel(bpmInput, volumeInput, instrumentInput, octaveInput, deleteButton);
+        JPanel presetsPanel = buildPresetsPanel(volumeInput, instrumentInput, octaveInput, deleteButton);
 
         rowPanel.add(presetsPanel, BorderLayout.EAST);
         linesContainer.add(rowPanel);
@@ -369,9 +418,8 @@ public class MainScreen extends JFrame {
         return deleteButton;
     }
 
-    private JPanel buildPresetsPanel(JTextField bpm, JTextField vol, JTextField inst, JTextField oct, JButton deleteBtn) {
+    private JPanel buildPresetsPanel(JTextField vol, JTextField inst, JTextField oct, JButton deleteBtn) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        panel.add(new JLabel("BPM:"));  panel.add(bpm);
         panel.add(new JLabel("Vol:"));  panel.add(vol);
         panel.add(new JLabel("Inst:")); panel.add(inst);
         panel.add(new JLabel("Oct:"));  panel.add(oct);
@@ -392,10 +440,14 @@ public class MainScreen extends JFrame {
     private List<LineInput> getAllLines() {
         List<LineInput> lineValues = new ArrayList<>();
         for (MusicLine line : musicLinesList) {
-            int bpm = tryParseInt(line.bpmInput.getText());
+            //set and normalize values
+            int bpm = this.globalBpm;
             int volume = tryParseInt(line.volumeInput.getText());
+            volume = volume <= ParserEvent.MIDI_SATURATION ? volume : ParserEvent.MIDI_SATURATION;
             int instrument = tryParseInt(line.instrumentInput.getText());
+            instrument = instrument <= ParserEvent.MIDI_SATURATION ? volume : ParserEvent.MIDI_PIANO;
             int octave = tryParseInt(line.octaveInput.getText());
+            octave = octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE;
 
             lineValues.add(new LineInput(line.songInput.getText(), bpm, volume, instrument, octave));
         }
