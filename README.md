@@ -1,8 +1,8 @@
 # Software_Development
 Este repositório documentará o processo de confecção do projeto geral da disciplina de Desenvolvimento de Software (INF01120) na UFRGS
-(*) Para mais informações sobre implementação e ideias do código, consultar wiki
+    (*) Para mais informações sobre implementação e ideias do código, consultar wiki
 
-observações:
+
 
 ### Propriedades do projeto
 * No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. Isso ocorrerá de tal forma que, Linha 0 => Voz[0] e, assim, sucessivamente de tal forma que cada linha implicará em uma Voz independente de outra.
