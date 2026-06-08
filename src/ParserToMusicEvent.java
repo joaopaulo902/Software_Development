@@ -1,6 +1,9 @@
 import java.util.List;
 import java.util.LinkedList;
 
+/**
+ * Converts Parser Events into Music Events
+ */
 public class ParserToMusicEvent {
 
     public static List<List<MusicEvent>> createMusicEvents(List<List<ParserEvent>> parserEvents){

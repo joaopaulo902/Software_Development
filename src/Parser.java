@@ -3,6 +3,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parses each MusicSheet/Line to create a list of Parser Events
+ */
 public class Parser {
     private final Map<Character, MusicStrategy> strategy = new HashMap<>();
     private char lastCharacter;
@@ -31,16 +34,6 @@ public class Parser {
             });
         }
 
-        /*this.strategy.put('b', (event) -> {
-            if (this.lastCharacter == 'F' || this.lastCharacter == 'C'){
-                defaultAction.apply(event);
-            }
-            else if (this.lastCharacter >= 'A' && this.lastCharacter <= 'G'){
-               event.setNote(event.getNote() - 1);
-               event.definePlayable(true);
-            }
-        });*/
-
         //evento de tocar si bemol
         this.strategy.put('H', (event) -> {
             event.setNote(NoteEnum.NOTE_B.getNote() - 1);
@@ -50,7 +43,7 @@ public class Parser {
         //increase octave event parameter alter
         this.strategy.put('?', (event) -> {
             int octave = event.getOctave() + 1;
-            event.setOctave(octave <= event.MAX_OCTAVE ? octave : event.MAX_OCTAVE);
+            event.setOctave(octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE);
             event.setTypeEvent(TypeEventParser.GENERIC);
         });
         //decrease octave event parameter alter
@@ -71,33 +64,33 @@ public class Parser {
 
         //increase bpm event parameter alter
         this.strategy.put('>', (event) -> {
-            long bpm = (event.getBpm() + event.BPM_VARIATION);
+            long bpm = (event.getBpm() + ParserEvent.BPM_VARIATION);
             event.setBpm( bpm > 0 ? bpm : Integer.MAX_VALUE);
             event.setTypeEvent(TypeEventParser.NEW_BPM);
         });
 
         //decrease bpm event parameter alter
         this.strategy.put('<', (event) -> {
-            long bpm = (event.getBpm() - event.BPM_VARIATION);
+            long bpm = (event.getBpm() - ParserEvent.BPM_VARIATION);
             event.setBpm(bpm > 0 ? bpm : event.getBpm());
             event.setTypeEvent(TypeEventParser.NEW_BPM);
         });
 
         //set instrument to MIDI AGOGOGOGOGOGOGOGOGO
         this.strategy.put(',', (event) ->{
-           event.setInstrument(event.MIDI_AGOGO);
+           event.setInstrument(ParserEvent.MIDI_AGOGO);
            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //set instrument to MIDI Harmonica
         this.strategy.put('!', (event) -> {
-            event.setInstrument(event.MIDI_HARMONICA);
+            event.setInstrument(ParserEvent.MIDI_HARMONICA);
             event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //set instrument to MIDI BAGPIPES
         MusicStrategy bagpipesAction = (event) -> {
-            event.setInstrument(event.MIDI_BAGPIPES);
+            event.setInstrument(ParserEvent.MIDI_BAGPIPES);
             event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         };
         this.strategy.put('I', bagpipesAction);
@@ -107,22 +100,25 @@ public class Parser {
 
         for (char c = '0'; c <= '9'; c++) {
             final int value = Character.getNumericValue(c);
-            //set instrument to MIDI # current + digit
+
             if (value % 2 == 0) {
                 this.strategy.put(c, (event) -> {
-                    event.setInstrument((event.getInstrument() + value) % event.MIDI_SATURATION);
+                    int instrument = event.getInstrument() + value;
+                    instrument = instrument <= ParserEvent.MIDI_SATURATION ? instrument : ParserEvent.MIDI_SATURATION;
+                    event.setInstrument(instrument);
                     event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
                 });
             }
             //set instrument to TUBULAR BELLS
             else {
                 this.strategy.put(c, (event) -> {
-                    event.setInstrument(event.MIDI_TUBULAR_BELLS);
+                    event.setInstrument(ParserEvent.MIDI_TUBULAR_BELLS);
                     event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
                 });
             }
         }
 
+        //enables flag for next note to be flat
         this.strategy.put('b', (event)->{
             this.lastCharacter = 'b';
             event.setTypeEvent(TypeEventParser.GENERIC);
@@ -130,22 +126,15 @@ public class Parser {
 
         //set instrument to TUBULAR BELLS
         this.strategy.put(';', (event) -> {
-            event.setInstrument(event.MIDI_TUBULAR_BELLS);
+            event.setInstrument(ParserEvent.MIDI_TUBULAR_BELLS);
             event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
-        //default behaviour (if it wasn't a note don't play it, if it was, keep playing)
+        //default behaviour (generate silent note)
         this.strategy.put('`', defaultAction);
 
 
     }
-
-/*    //may not be useful in this context since text is imported as LineInput
-    private String[] parseLines(String entry) {
-        String LINE_BREAK = "\\R";
-        return entry.split(LINE_BREAK);
-    }*/
-
 
 
     public List<List<ParserEvent>> parseFullMusic(List<LineInput> lines) {

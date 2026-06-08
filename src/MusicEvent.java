@@ -1,7 +1,7 @@
-//manages music event types
-
-public class MusicEvent {//to do: handle out of bounds cases
-    //constantes
+/**
+ * Deals with events more alike the java sound library can handle
+ */
+public class MusicEvent {
     public static final int MAX_VALUE = 127;//define o maior valor dos campos
     public static final int INSTRUMENT_CHANGE = 0;
     public static final int BPM_CHANGE = 1;
@@ -17,8 +17,6 @@ public class MusicEvent {//to do: handle out of bounds cases
     public static final double SIXTEENTH_NOTE = 0.25;
     public static final double THIRTY_SECOND_NOTE = 0.125;
 
-
-    //metodos publicos
     public int get_command()
     {
         return command;
@@ -86,7 +84,6 @@ public class MusicEvent {//to do: handle out of bounds cases
         instrument = new_instrument;
     }
 
-    //dados privados
     private int command;
     private int note;
     private int volume;
@@ -95,7 +92,6 @@ public class MusicEvent {//to do: handle out of bounds cases
     private double duration;
 
 
-    //metodos privados
     private void mark_all_unused(){
         command = OUT_OF_BOUNDS;
         note = OUT_OF_BOUNDS;

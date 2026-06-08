@@ -3,8 +3,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-//responsible for storing and playing playable music
-
+/**
+ * Stores and manages songs
+ */
 public class MusicBox {
 
     public static final int RESOLUTION = 24;
@@ -63,32 +64,21 @@ public class MusicBox {
     }
 
     public void play(){
-        System.out.println("[DEBUG] Método play() foi acionado.");
-        System.out.println("[DEBUG] open_it_is: " + open_it_is);
-        System.out.println("[DEBUG] maker.is_empty(): " + maker.is_empty());
-
-        if (sequence != null) {
-            System.out.println("[DEBUG] Duração da Sequence em Ticks: " + sequence.getTickLength());
-        } else {
-            System.out.println("[DEBUG] A Sequence está NULL!");
-        }
 
         if (!open_it_is || (maker.is_empty() && (sequence == null || sequence.getTickLength() == 0))){
-            System.out.println("[DEBUG] Bloqueado na condição de guarda! Código não vai tocar.");
+            System.out.println("Invalid Song, won't be played");
             return;
         }
 
         try {
             sequencer.setSequence(sequence);
-            System.out.println("[DEBUG] Sequence atribuída ao sequencer com sucesso.");
         }
         catch (InvalidMidiDataException e) {
-            System.out.println("[DEBUG] Erro crítico ao atribuir a Sequence.");
+            System.out.println("Error attributing sequence");
             e.printStackTrace();
         }
 
         sequencer.start();
-        System.out.println("[DEBUG] sequencer.start() executado. Está rodando? " + sequencer.isRunning());
     }
 
     public void pause(){

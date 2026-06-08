@@ -2,13 +2,14 @@
 import javax.sound.midi.Track;
 import java.util.List;
 
-//deals with individual channel
+/**
+ * class for dealing with individual channels from channel list
+ */
 
 public class Channel {
-    //constantes
+
     public static final int CHANNEL_ERROR = -1;
 
-    //metodos publicos
     public void open(int id, Track track) {
         this.track = track;
         channel_number = id;
@@ -60,13 +61,10 @@ public class Channel {
         }
         used = false;
     }
-    //Variaveis privadas
     private int channel_number;
     private Track track;
     private long tick = 0;
     private boolean is_open = false;
     private boolean used = false;
-
-    //metodos privados
 
 }

@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
-// presets list for iterating through 4 main values specified in requirements
-
+/**
+ * For different default presets for when adding new lines
+ */
 public class PresetTable {
     private final int NUMBER_DIFFERENT_PRESETS = 4;
     public final List<LinePreset> PRESETS = new ArrayList<>();

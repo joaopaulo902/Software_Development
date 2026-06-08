@@ -1,10 +1,13 @@
-public enum DirectoryPath {
+/**
+ * Specifies directory Paths for resources
+ */
+public enum ResourcesPath {
     TXTPATH("Resources/Saved_Text/"),
     MIDIPATH("Resources/Saved_Songs/");
 
     public final String path;
 
-    DirectoryPath(String input){
+    ResourcesPath(String input){
         this.path = input;
     }
 }

@@ -1,4 +1,7 @@
 @FunctionalInterface
+/**
+ * Interface that can be implemented in anyway needed by a new character functionality
+ */
 public interface MusicStrategy {
     /**
      * Define the contract of what needs to be executed when processing a specific character

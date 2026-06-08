@@ -9,12 +9,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-//deals with saving and loading files
 
+/**
+ * Loads and saves midi files
+ */
 public class MusicCollection {
     public static List<String> view(){
         List<String>songs = new LinkedList<>();
-        try (Stream<Path> paths = Files.list(Paths.get(DirectoryPath.MIDIPATH.path))) {
+        try (Stream<Path> paths = Files.list(Paths.get(ResourcesPath.MIDIPATH.path))) {
             songs = paths
                     .filter(Files::isRegularFile) // Filters out subdirectories
                     .map(Path::getFileName)
@@ -27,7 +29,7 @@ public class MusicCollection {
     }
 
     public static void save(Sequence to_save, String name/*, List<Path> text_files*/){
-        /*Path texts = Paths.get(DirectoryPath.TXTPATH.path + name);
+        /*Path texts = Paths.get(ResourcesPath.TXTPATH.path + name);
        try {
             Files.createDirectories(texts);
         } catch (IOException e) {
@@ -36,9 +38,9 @@ public class MusicCollection {
 
         int[] temp = MidiSystem.getMidiFileTypes(to_save);
         int save_type = temp[0];
-        File old_file = new File(DirectoryPath.MIDIPATH.path +name+".midi");
+        File old_file = new File(ResourcesPath.MIDIPATH.path +name+".midi");
         old_file.delete();
-        File out_file = new File(DirectoryPath.MIDIPATH.path +name+".midi");
+        File out_file = new File(ResourcesPath.MIDIPATH.path +name+".midi");
         try {
             MidiSystem.write(to_save, save_type, out_file);
         } catch (IOException e) {
@@ -71,13 +73,13 @@ public class MusicCollection {
         if (name.equals(EXAMPLE_SONG)){
             return;
         }
-        Path old_file = Paths.get(DirectoryPath.MIDIPATH.path +name+ ".midi");
+        Path old_file = Paths.get(ResourcesPath.MIDIPATH.path +name+ ".midi");
         try {
             Files.delete(old_file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Path old_directory = Paths.get(DirectoryPath.TXTPATH.path + name);
+        Path old_directory = Paths.get(ResourcesPath.TXTPATH.path + name);
         try (Stream<Path> stream = Files.walk(old_directory)){
             stream.sorted(Comparator.reverseOrder())
                     .forEach(text_file -> {

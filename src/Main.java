@@ -22,9 +22,6 @@ public class Main {
         //load screen
 
 
-
-        //ps: shield user loading stuff outside of pipeline (load text -> convert text -> play song OR load midi file -> play midi file)
-
         // load file tester (can only be added to frontend)
         /*
         TextProcessor testFileContents = new TextProcessor();
@@ -32,12 +29,6 @@ public class Main {
         */
 
         //parsing action tester
-        /*
-        List<LineInput> mockInput = new ArrayList<>();
-        mockInput.add(new LineInput("[10] >>>A B C D E F G H", 120, 60, 0));
-        mockInput.add(new LineInput("[10] >>>A B C D E F G H", 120, 60, 0));
-        mockInput.add(new LineInput("[10] >>>A B C D E F G H", 120, 60, 0));
-        TestParser.functionality(mockInput);
-        */
+
     }
 }

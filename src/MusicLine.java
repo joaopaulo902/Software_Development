@@ -1,7 +1,8 @@
 import javax.swing.*;
 
-// object for storing musicLine front end unit (stackable)
-
+/**
+ * Front end class for instancing new song lines
+ */
 public class MusicLine {
     JPanel rowPanel;
     JTextField songInput;

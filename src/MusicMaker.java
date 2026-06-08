@@ -1,8 +1,9 @@
 import javax.sound.midi.Track;
 import java.util.List;
 
-// deals with java sound channels
-
+/**
+ * Creates full Song for API
+ */
 public class MusicMaker {
 
     public static final int NUMBER_OF_TRACKS = 16;

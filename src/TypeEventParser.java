@@ -1,5 +1,6 @@
-
-//enum for generating event types
+/**
+ * Types of different events that can be generated
+ */
 public enum TypeEventParser {
     NEW_INSTRUMENT(0),
     NEW_BPM(1),

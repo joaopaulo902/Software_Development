@@ -10,6 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Class responsible for instancing the Main Screen
+ */
 public class MainScreen extends JFrame {
 
     private static final int SCREEN_WIDTH = 800;
@@ -109,7 +113,6 @@ public class MainScreen extends JFrame {
             }
         });
 
-        // Coloca os componentes dentro do container de retorno
         bpmPanel.add(playLabel);
         bpmPanel.add(bpmInput);
 
@@ -445,7 +448,7 @@ public class MainScreen extends JFrame {
             int volume = tryParseInt(line.volumeInput.getText());
             volume = volume <= ParserEvent.MIDI_SATURATION ? volume : ParserEvent.MIDI_SATURATION;
             int instrument = tryParseInt(line.instrumentInput.getText());
-            instrument = instrument <= ParserEvent.MIDI_SATURATION ? volume : ParserEvent.MIDI_PIANO;
+            instrument = instrument <= ParserEvent.MIDI_SATURATION ? instrument : ParserEvent.MIDI_PIANO;
             int octave = tryParseInt(line.octaveInput.getText());
             octave = octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE;
 

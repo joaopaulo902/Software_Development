@@ -1,12 +1,11 @@
 import javax.sound.midi.*;
 
-// deals with java sound api
+/**
+ * Deals directly with the java sound API
+ */
 
 public class MusicEventHandler {
-    //constantes publicas
 
-
-    //metodos publicos
     public void start(Track f, int c){
         track = f;
         channel_number = c;
@@ -32,7 +31,6 @@ public class MusicEventHandler {
         };
     }
 
-    //metodos privados
     private void treat_instrument(MusicEvent musicEvent, long when){
         track.add(new MidiEvent(nova_mensagem_curta(musicEvent, ShortMessage.PROGRAM_CHANGE), when));
     }
@@ -83,11 +81,9 @@ public class MusicEventHandler {
     }
 
 
-    //constantes privadas
     private static final int CONVERSION = 60000000;
     private static final int TEMPO_MSG = 0x51;
 
-    //variaveis privadas
     private Track track;
     private int channel_number;
     private boolean started;
