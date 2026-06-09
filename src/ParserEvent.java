@@ -6,6 +6,7 @@ public class ParserEvent {
     public static final int OCTAVE_SIZE = 12;
     //standard bpm variation specified in requirements
     public static final int BPM_VARIATION = 10;
+    //Saturation for Byte long midi Parameters
     public static final int MIDI_SATURATION = 127;
     //standard maximum octave specified in requirements
     public static final int MAX_OCTAVE = 9;
@@ -31,7 +32,7 @@ public class ParserEvent {
         this.typeEvent = inputEvent;
         this.octave = inputOctave;
         this.note = 0;
-        this.duration = FILLER_VALUE;
+        this.duration = FILLER_VALUE; //The only duration used is 1
         this.bpm = inputBpm;
         this.volume = inputVolume;
         this.instrument = inputInstrument;

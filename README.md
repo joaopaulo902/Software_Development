@@ -5,32 +5,33 @@ Este repositório documentará o processo de confecção do projeto geral da dis
 
 
 ### Propriedades do projeto
-* No texto, cada linha gerará uma Voz, como proposto na teoria musical de Bach. Isso ocorrerá de tal forma que, Linha 0 => Voz[0] e, assim, sucessivamente de tal forma que cada linha implicará em uma Voz independente de outra.
-* O botão *save* só salva o texto da partitura do usuário. os presets precisam ser inseridos a cada import (se não serão os padrão)
-* O botão *Convert to Midi* converte o texto atualmente carregado na tela para o formato midi e salva-o em um arquivo
-* BPM é global
-* Valores Positivos maiores do que os especificados saturam no valor especificado
-* Maior oitava é a Nona (9°) (octave = 9)
-* Maior Volume = 127
-* Bpm só precisa ser positivo
-
+| Regra /  Parâmetro          | Definição /  Comportamento                                                   |
+|:----------------------------|:-----------------------------------------------------------------------------|
+| **Vozes**                   | Cada linha de texto gera uma voz independente (Linha 0 → Voz 0, etc.).       |
+| **Percussão**               | A 10ª linha é reservada para percussão (padrão MIDI GM).                     |
+| **BPM**                     | Global e deve ser um valor positivo.                                         |
+| **Volume (Velocity)**       | Máximo de 127.                                                               |
+| **Oitava (Octave)**         | Máxima definida como 9.                                                      |
+| **Saturação**               | Valores positivos acima dos limites especificados saturam no teto permitido. |
+| **Botão *Save***            | Salva apenas o texto da partitura (presets não são exportados).              |
+| **Botão *Convert to MIDI*** | Converte o texto ativo na tela e gera o arquivo .mid.                        |
 
 
 ### Como Rodar o Projeto
 Para rodar o projeto, você deve ter o ambiente virtual java instalado. Para mais ajuda [clique aqui](https://www.java.com/en/download/help/download_options.html)
-0. Clone este repositório
+1. Clone este repositório
 ```
     git clone https://github.com/joaopaulo902/Software_Development.git
 ```
-1. Vá até o diretório raíz **do projeto**
+2. Vá até o diretório raíz **do projeto**
 ```
     cd C:\[YourPathToProject]
 ```
-2. Compile o código
+3. Compile o código
 ```
     javac -d bin src/*.java  
 ```
-3. Rode o executável via máquina virtual
+4. Rode o executável via máquina virtual Java (JVM)
 ```
     java -cp bin Main
 ```

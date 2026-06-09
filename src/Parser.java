@@ -15,8 +15,11 @@ public class Parser {
         createFunctionMap();
     }
 
+    /**
+     * Fills strategy Mapping
+     */
     private void createFunctionMap() {
-        // preenchimento do mapa de implementações de MusicStrategy
+
         //default action
         MusicStrategy defaultAction = (event) -> event.setTypeEvent(TypeEventParser.SILENCE);
 
@@ -141,31 +144,39 @@ public class Parser {
         List<List<ParserEvent>> completeSongEvents = new ArrayList<>();
 
         for (LineInput line : lines) {
-            if (!line.text().trim().isEmpty()) { // Ignore Blank Lines
-                List<ParserEvent> events = createPartitura(line);
+                List<ParserEvent> events = createSheet(line);
                 completeSongEvents.add(events);
-            }
         }
         return completeSongEvents;
     }
 
-    private List<ParserEvent>createPartitura(LineInput line) {
+    private List<ParserEvent> createSheet(LineInput line) {
         List<ParserEvent> sheet = new ArrayList<>();
 
-        //add 2 first parameters separately instrument then bpm
-        ParserEvent currentState = new ParserEvent(-1, line.instrument(), line.volume(), line.octave(), TypeEventParser.NEW_INSTRUMENT);
-        sheet.add(new ParserEvent(currentState));
-        currentState.setBpm(line.BPM());
-        currentState.setTypeEvent(TypeEventParser.NEW_BPM);
-        sheet.add(new ParserEvent(currentState));
+        ParserEvent currentState = setPresets(line, sheet);
+
         String text = line.text();
+
+        int startIndex = generateInitialSilentNotes(text, currentState, sheet);
+
+        char[] inputTextChars = text.toCharArray();
+
+        for (int i = startIndex; i < inputTextChars.length; i++) {
+            processCharacter(inputTextChars[i], currentState);
+            sheet.add(new ParserEvent(currentState));
+            this.lastCharacter = inputTextChars[i];
+        }
+        return sheet;
+    }
+
+    private int generateInitialSilentNotes(String text, ParserEvent currentState, List<ParserEvent> sheet) {
         int startIndex = 0;
 
         if (text.startsWith("[")) {
             int closeBracketIndex = text.indexOf("]");
 
 
-            if (closeBracketIndex > 1) {
+            if (closeBracketIndex > 1) { //checks if close bracket is a valid String position
                 try {
                     String numberStr = text.substring(1, closeBracketIndex);
                     int silenceCount = Integer.parseInt(numberStr);
@@ -184,14 +195,19 @@ public class Parser {
                 }
             }
         }
+        return startIndex;
+    }
 
-        char[] chars = text.toCharArray();
-        for (int i = startIndex; i < chars.length; i++) {
-            processCharacter(chars[i], currentState);
-            sheet.add(new ParserEvent(currentState));
-            this.lastCharacter = chars[i];
-        }
-        return sheet;
+    private static ParserEvent setPresets(LineInput line, List<ParserEvent> sheet) {
+        //add BPM and instrument preset parameters separately to avoid bugs
+        //add instrument
+        ParserEvent currentState = new ParserEvent(-1, line.instrument(), line.volume(), line.octave(), TypeEventParser.NEW_INSTRUMENT);
+        sheet.add(new ParserEvent(currentState));
+        //add bpm
+        currentState.setBpm(line.BPM());
+        currentState.setTypeEvent(TypeEventParser.NEW_BPM);
+        sheet.add(new ParserEvent(currentState));
+        return currentState;
     }
 
     private void processCharacter(char c, ParserEvent event) {
