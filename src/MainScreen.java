@@ -20,8 +20,6 @@ public class MainScreen extends JFrame {
     private static final int SCREEN_HEIGHT = 720;
     private static final int MAX_LINES = 16;
 
-    private static final String TEXT_DIR = "Resources/Saved_Texts";
-    private static final String SHEET_DIR = "Resources/Saved_Songs";
     private static final String PLAY_TEXT = "▶ Play";
     private static final String PAUSE_TEXT = "⏸ Pause";
     private final int ROCK_MUSIC_BPM = 120;
@@ -218,7 +216,7 @@ public class MainScreen extends JFrame {
     }
 
     private void importTextFile() {
-        File file = chooseFile(TEXT_DIR, new FileNameExtensionFilter("Text Archives (*.txt)", "txt"));
+        File file = chooseFile(ResourcesPath.TEXT_PATH.getContent(), new FileNameExtensionFilter("Text Archives (*.txt)", "txt"));
         if (file == null) return;
 
         String textBuffer = new TextProcessor().processFile(file);
@@ -241,7 +239,7 @@ public class MainScreen extends JFrame {
     }
 
     private void importSheetFile() {
-        File file = chooseFile(SHEET_DIR, new FileNameExtensionFilter("Midi Files (*.midi)", "midi"));
+        File file = chooseFile(ResourcesPath.MIDI_PATH.getContent(), new FileNameExtensionFilter("Midi Files (*.midi)", "midi"));
         if (file == null) {
             System.out.println("no file");
             return;
@@ -322,7 +320,11 @@ public class MainScreen extends JFrame {
     }
 
     private String promptSaveDialogue() {
-        String fileName = JOptionPane.showInputDialog(this, "Type file Name:", "Save File", JOptionPane.PLAIN_MESSAGE);
+        String fileName = JOptionPane.showInputDialog(this,
+                "Type file Name:",
+                "Save File",
+                JOptionPane.PLAIN_MESSAGE);
+
         String songName = fileName;
         if (fileName != null && !fileName.trim().isEmpty()) {
             fileName = fileName.trim();
@@ -336,7 +338,7 @@ public class MainScreen extends JFrame {
     }
 
     private void saveTextFile(String fileName, List<LineInput> allLines) {
-        File fileToSave = new File(TEXT_DIR, fileName);
+        File fileToSave = new File(ResourcesPath.TEXT_PATH.getContent(), fileName);
 
         try (FileWriter writer = new FileWriter(fileToSave, StandardCharsets.UTF_8)) {
             for (LineInput line : allLines) {

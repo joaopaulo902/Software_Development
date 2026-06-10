@@ -39,10 +39,10 @@ Para rodar o projeto, você deve ter o ambiente virtual java instalado. Para mai
 
 | Linha | Oitava Padrão | Tipo de Voz Padrão | Volume Padrão |
 |:------|:-------------:|:-------------------|---------------|
-| 0     |       6       | Piano (GM 0)       | 100           |
+| 0     |       6       | Piano (GM 6)       | 100           |
 | 1     |       5       | Órgão (GM 20)      | 80            |
-| 2     |       4       | Cravo (GM 6)       | 60            |
-| 3     |       3       | Fagote (GM 71)     | 40            |
+| 2     |       4       | Cravo (GM 0)       | 60            |
+| 3     |       3       | Fagote (GM 70)     | 40            |
 | 4     |       6       | ...                | ...           |
 ### Requisitos do Projeto
 - **RF** - Requisito Funcional

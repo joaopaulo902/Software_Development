@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * For different default presets for when adding new lines
+ * For different default presets for when adding new lines (works like a CSV)
  */
 public class PresetTable {
     private final int NUMBER_DIFFERENT_PRESETS = 4;
@@ -10,10 +10,10 @@ public class PresetTable {
 
     PresetTable(){
         //add main voice
-        PRESETS.add(new LinePreset("input text here", "120", "100", "0", "6"));
+        PRESETS.add(new LinePreset("input text here", "120", "100", "6", "6"));
         PRESETS.add(new LinePreset("input text here", "120", "80", "20", "5"));
-        PRESETS.add(new LinePreset("input text here", "120", "60", "6", "4"));
-        PRESETS.add(new LinePreset("input text here", "120", "40", "71", "3"));
+        PRESETS.add(new LinePreset("input text here", "120", "60", "0", "4"));
+        PRESETS.add(new LinePreset("input text here", "120", "40", "70", "3"));
     }
 
     public LinePreset getPresetLine(int i){
