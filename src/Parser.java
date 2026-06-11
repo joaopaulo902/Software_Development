@@ -20,69 +20,67 @@ public class Parser {
      */
     private void createFunctionMap() {
 
+        setNoteBehaviour();
+
+        setOctaveBehaviour();
+
+        setVolumeBehaviour();
+
+        setBpmBehaviour();
+
+        setInstrumentBehaviour();
+
+        setLowerCaseCharacterBehaviour();
+
+        setDefaultBehaviour();
+
+
+    }
+
+    private void setDefaultBehaviour() {
         //default action
-        MusicStrategy defaultAction = (event) -> event.setTypeEvent(TypeEventParser.SILENCE);
-
-        //Comportamento das notas (checar se tá bom dps)
-        for (NoteEnum note : NoteEnum.values()) {
-            final char c = note.getLabel();
-            strategy.put(c, (event) -> {
-                if(this.lastCharacter == 'b' && (note.getLabel() != 'C' && note.getLabel() != 'F')){
-                    event.setNote(note.getNote() - 1);
-                }
-                else {
-                    event.setNote(note.getNote());
-                }
+        MusicStrategy defaultAction = (event) -> {
+            if(NoteEnum.contains(this.lastCharacter)) {
                 event.setTypeEvent(TypeEventParser.NEW_NOTE);
-            });
+            }
+            else {
+                event.setTypeEvent(TypeEventParser.SILENCE);
+            }
+
+        };
+
+        //default behaviour (generate silent note)
+        this.strategy.put('`', defaultAction);
+    }
+
+
+    void setLowerCaseCharacterBehaviour() {
+        //se é uma nota em minúsculo, toca Silent Note
+        for (NoteEnum note : NoteEnum.values()) {
+            final char c = Character.toLowerCase(note.getLabel());
+            if(c == 'b'){
+                //enables flag for next note to be flat
+                this.strategy.put(c, (event)->{
+                    event.setTypeEvent(TypeEventParser.GENERIC);
+                });
+            }
+            else{
+                this.strategy.put(c, (event)-> event.setTypeEvent(TypeEventParser.SILENCE));
+                this.lastCharacter = c;
+            }
         }
-
-        //evento de tocar si bemol
-        this.strategy.put('H', (event) -> {
-            event.setNote(NoteEnum.NOTE_B.getNote() - 1);
-            event.setTypeEvent(TypeEventParser.NEW_NOTE);
-        });
-
-        //increase octave event parameter alter
-        this.strategy.put('?', (event) -> {
-            int octave = event.getOctave() + 1;
-            event.setOctave(octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE);
-            event.setTypeEvent(TypeEventParser.GENERIC);
-        });
-        //decrease octave event parameter alter
-        this.strategy.put('V', (event) -> {
-            int octave = event.getOctave() - 1;
-            event.setOctave(octave >= 0 ? octave : 0);
-            event.setTypeEvent(TypeEventParser.GENERIC);
-        });
-
-        //doubles volume and does wrap around if it reaches limit
-        this.strategy.put(' ', (event) -> {
-            final int SATURATION = 100;
-            long newVolume = 2 * event.getVolume();
-
-            event.setVolume((newVolume <= SATURATION) ? newVolume : SATURATION);
-            event.setTypeEvent(TypeEventParser.GENERIC);
-        });
-
-        //increase bpm event parameter alter
-        this.strategy.put('>', (event) -> {
-            long bpm = (event.getBpm() + ParserEvent.BPM_VARIATION);
-            event.setBpm( bpm > 0 ? bpm : Integer.MAX_VALUE);
-            event.setTypeEvent(TypeEventParser.NEW_BPM);
-        });
-
-        //decrease bpm event parameter alter
-        this.strategy.put('<', (event) -> {
-            long bpm = (event.getBpm() - ParserEvent.BPM_VARIATION);
-            event.setBpm(bpm > 0 ? bpm : event.getBpm());
-            event.setTypeEvent(TypeEventParser.NEW_BPM);
-        });
-
+    }
+    private void setInstrumentBehaviour() {
         //set instrument to MIDI AGOGOGOGOGOGOGOGOGO
         this.strategy.put(',', (event) ->{
            event.setInstrument(ParserEvent.MIDI_AGOGO);
            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
+        });
+
+        //set instrument to TUBULAR BELLS
+        this.strategy.put(';', (event) -> {
+            event.setInstrument(ParserEvent.MIDI_TUBULAR_BELLS);
+            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
         });
 
         //set instrument to MIDI Harmonica
@@ -99,8 +97,6 @@ public class Parser {
         this.strategy.put('I', bagpipesAction);
         this.strategy.put('O', bagpipesAction);
         this.strategy.put('U', bagpipesAction);
-
-
         for (char c = '0'; c <= '9'; c++) {
             final int value = Character.getNumericValue(c);
 
@@ -121,20 +117,65 @@ public class Parser {
             }
         }
 
-        //enables flag for next note to be flat
-        this.strategy.put('b', (event)->{
-            this.lastCharacter = 'b';
+    }
+
+    private void setBpmBehaviour() {
+        //increase bpm event parameter alter
+        this.strategy.put('>', (event) -> {
+            long bpm = (event.getBpm() + ParserEvent.BPM_VARIATION);
+            event.setBpm( bpm > 0 ? bpm : Integer.MAX_VALUE);
+            event.setTypeEvent(TypeEventParser.NEW_BPM);
+        });
+
+        //decrease bpm event parameter alter
+        this.strategy.put('<', (event) -> {
+            long bpm = (event.getBpm() - ParserEvent.BPM_VARIATION);
+            event.setBpm(bpm > 0 ? bpm : event.getBpm());
+            event.setTypeEvent(TypeEventParser.NEW_BPM);
+        });
+    }
+
+    private void setVolumeBehaviour() {
+        //doubles volume and does wrap around if it reaches limit
+        this.strategy.put(' ', (event) -> {
+            final int SATURATION = 100;
+            long newVolume = 2 * event.getVolume();
+
+            event.setVolume((newVolume <= SATURATION) ? newVolume : SATURATION);
             event.setTypeEvent(TypeEventParser.GENERIC);
         });
+    }
 
-        //set instrument to TUBULAR BELLS
-        this.strategy.put(';', (event) -> {
-            event.setInstrument(ParserEvent.MIDI_TUBULAR_BELLS);
-            event.setTypeEvent(TypeEventParser.NEW_INSTRUMENT);
+    private void setOctaveBehaviour() {
+        //increase octave event parameter alter
+        this.strategy.put('?', (event) -> {
+            int octave = event.getOctave() + 1;
+            event.setOctave(octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE);
+            event.setTypeEvent(TypeEventParser.GENERIC);
         });
+        //decrease octave event parameter alter
+        this.strategy.put('V', (event) -> {
+            int octave = event.getOctave() - 1;
+            event.setOctave(octave >= 0 ? octave : 0);
+            event.setTypeEvent(TypeEventParser.GENERIC);
 
-        //default behaviour (generate silent note)
-        this.strategy.put('`', defaultAction);
+        });
+    }
+
+    private void setNoteBehaviour() {
+        //Comportamento das notas (checar se tá bom dps)
+        for (NoteEnum note : NoteEnum.values()) {
+            final char c = note.getLabel();
+            strategy.put(c, (event) -> {
+                if(this.lastCharacter == 'b' && (note.getLabel() != 'C' && note.getLabel() != 'F')){
+                    event.setNote(note.getNote() - 1);
+                }
+                else {
+                    event.setNote(note.getNote());
+                }
+                event.setTypeEvent(TypeEventParser.NEW_NOTE);
+            });
+        }
 
 
     }
@@ -181,7 +222,7 @@ public class Parser {
                     String numberStr = text.substring(1, closeBracketIndex);
                     int silenceCount = Integer.parseInt(numberStr);
 
-                    char silenceChar = '`';
+                    char silenceChar = 'a';
 
                     for (int i = 0; i < silenceCount; i++) {
                         processCharacter(silenceChar, currentState);
@@ -218,6 +259,6 @@ public class Parser {
             action.apply(event);
         }
 
-        //this.lastCharacter = c;
+        this.lastCharacter = c;
     }
 }

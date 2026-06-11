@@ -85,7 +85,7 @@ public class MainScreen extends JFrame {
 
         playLabel = new JLabel("BPM:");
         JTextField bpmInput = new JTextField(String.valueOf(ROCK_MUSIC_BPM), 4);
-        Runnable atualizarBpm = () -> {
+        Runnable updateBpm = () -> {
             try {
                 int newBpm = Integer.parseInt(bpmInput.getText().trim());
                 if (newBpm > 0) {
@@ -101,13 +101,13 @@ public class MainScreen extends JFrame {
             }
         };
 
-        bpmInput.addActionListener(e -> atualizarBpm.run());
+        bpmInput.addActionListener(e -> updateBpm.run());
 
 
         bpmInput.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusLost(java.awt.event.FocusEvent e) {
-                atualizarBpm.run();
+                updateBpm.run();
             }
         });
 

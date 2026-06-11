@@ -8,7 +8,8 @@ public enum NoteEnum {
     NOTE_F(5, 'F'),
     NOTE_G(7, 'G'),
     NOTE_A(9, 'A'),
-    NOTE_B(11, 'B');
+    NOTE_B(11, 'B'),
+    NOTE_H(10, 'H');
 
     private final int note;
     private final char label;
@@ -16,6 +17,14 @@ public enum NoteEnum {
     NoteEnum(int value, char label){
         this.note = value;
         this.label = label;
+    }
+    public static boolean contains(char c) {
+        for (NoteEnum note : NoteEnum.values()) {
+            if (note.getLabel() == c) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getNote(){
