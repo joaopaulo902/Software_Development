@@ -295,7 +295,7 @@ public class MainScreen extends JFrame {
 
     private boolean validateLines(List<LineInput> lines) {
         for (LineInput line : lines) {
-            if (line.BPM() < 0 || line.volume() < 0 || line.instrument() < 0 || line.octave() < 0) {
+            if (line.bpm().getValue() < 0 || line.volume().getValue() < 0 || line.instrument().getValue() < 0 || line.octave().getValue() < 0) {
                 return false;
             }
         }
@@ -446,13 +446,10 @@ public class MainScreen extends JFrame {
         List<LineInput> lineValues = new ArrayList<>();
         for (MusicLine line : musicLinesList) {
             //set and normalize values
-            int bpm = this.globalBpm;
-            int volume = tryParseInt(line.volumeInput.getText());
-            volume = volume <= ParserEvent.MIDI_SATURATION ? volume : ParserEvent.MIDI_SATURATION;
-            int instrument = tryParseInt(line.instrumentInput.getText());
-            instrument = instrument <= ParserEvent.MIDI_SATURATION ? instrument : ParserEvent.MIDI_PIANO;
-            int octave = tryParseInt(line.octaveInput.getText());
-            octave = octave <= ParserEvent.MAX_OCTAVE ? octave : ParserEvent.MAX_OCTAVE;
+            Bpm bpm = new Bpm(this.globalBpm);
+            Volume volume = new Volume(tryParseInt(line.volumeInput.getText()));
+            Instrument instrument = new Instrument(tryParseInt(line.instrumentInput.getText()));
+            Octave octave = new Octave(tryParseInt(line.octaveInput.getText()));
 
             lineValues.add(new LineInput(line.songInput.getText(), bpm, volume, instrument, octave));
         }

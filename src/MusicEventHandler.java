@@ -52,7 +52,7 @@ public class MusicEventHandler {
         track.add(new MidiEvent(msg, when));
     }
 
-    private long treat_silence(double how_long, long when){
+    private long treat_silence(long how_long, long when){
         return (long) (when + how_long * MusicBox.RESOLUTION);
     }
 

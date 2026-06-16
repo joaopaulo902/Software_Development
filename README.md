@@ -39,9 +39,9 @@ Para rodar o projeto, você deve ter o ambiente virtual java instalado. Para mai
 
 | Linha | Oitava Padrão | Tipo de Voz Padrão | Volume Padrão |
 |:------|:-------------:|:-------------------|---------------|
-| 0     |       6       | Piano (GM 6)       | 100           |
+| 0     |       6       | Cravo (GM 6)       | 100           |
 | 1     |       5       | Órgão (GM 20)      | 80            |
-| 2     |       4       | Cravo (GM 0)       | 60            |
+| 2     |       4       | Piano (GM 0)       | 60            |
 | 3     |       3       | Fagote (GM 70)     | 40            |
 | 4     |       6       | ...                | ...           |
 ### Requisitos do Projeto
@@ -90,7 +90,7 @@ Para rodar o projeto, você deve ter o ambiente virtual java instalado. Para mai
 |          **,**          | Troca instrumento para **MIDI #20** (Agogô)            |
 |  {a, c, d, e, f, g, h}  | Gera silêncio                                          |
 | [numero] (só no início) | Gera *numero* eventos de silêncio no comeco da musica  |
-|         **Else*         | Gera silêncio                                          |
+|         **Else*         | Repete última nota tocada                              |
 (*) como o BPM é indexado pela primeira linha, os caracteres '<' e '>' só surtem efeito se forem aplicados ali
 
 
