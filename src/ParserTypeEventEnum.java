@@ -1,7 +1,7 @@
 /**
  * Types of different events that can be generated
  */
-public enum TypeEventParser {
+public enum ParserTypeEventEnum {
     NEW_INSTRUMENT(0),
     NEW_BPM(1),
     SILENCE(2),
@@ -10,7 +10,7 @@ public enum TypeEventParser {
 
     private final int value;
 
-    TypeEventParser(int i) {
+    ParserTypeEventEnum(int i) {
         this.value = i;
     }
 

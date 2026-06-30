@@ -12,7 +12,7 @@ public class MusicEvent {
 
     public static final double FULL_NOTE = 4;
     public static final double HALF_NOTE = 2;
-    public static final double QUARTER_NOTE = 1;
+    public static final int QUARTER_NOTE = 1;
     public static final double EIGHTH_NOTE = 0.5;
     public static final double SIXTEENTH_NOTE = 0.25;
     public static final double THIRTY_SECOND_NOTE = 0.125;
@@ -41,7 +41,7 @@ public class MusicEvent {
         return instrument;
     }
 
-    public double get_duration()
+    public long get_duration()
     {
         return duration;
     }
@@ -55,7 +55,7 @@ public class MusicEvent {
         bpm = _new;
     }
 
-    public void new_note(int new_tone, int new_volume, double new_duration){
+    public void new_note(int new_tone, int new_volume, int new_duration){
         if(!note_parameters_are_right(new_tone, new_volume, new_duration)){
             return;
         }
@@ -66,7 +66,7 @@ public class MusicEvent {
         duration = new_duration;
     }
 
-    public void new_silence(double new_duration){
+    public void new_silence(int new_duration){
         if(!duration_is_right(new_duration)){
             return;
         }
@@ -89,7 +89,7 @@ public class MusicEvent {
     private int volume;
     private int bpm;
     private int instrument;
-    private double duration;
+    private long duration;
 
 
     private void mark_all_unused(){
@@ -103,7 +103,7 @@ public class MusicEvent {
     private boolean bpm_is_right(int bpm){
         return bpm >= 0;
     }
-    private boolean note_parameters_are_right(int note, int volume, double duration){
+    private boolean note_parameters_are_right(int note, int volume, int duration){
         if(note > MAX_VALUE || note < 0){
             return false;
         }
@@ -112,7 +112,7 @@ public class MusicEvent {
         }
         return !(duration > FULL_NOTE) && !(duration < THIRTY_SECOND_NOTE);
     }
-    private boolean duration_is_right(double duration){
+    private boolean duration_is_right(int duration){
         return !(duration > FULL_NOTE) && !(duration < THIRTY_SECOND_NOTE);
     }
     private boolean instrument_is_right(int instrument){

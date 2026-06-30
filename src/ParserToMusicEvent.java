@@ -25,21 +25,21 @@ public class ParserToMusicEvent {
     private static MusicEvent translate(ParserEvent parserEvent){
         MusicEvent currentEvent = new MusicEvent();
         switch(parserEvent.getTypeEvent()){
-            case TypeEventParser.NEW_BPM:
-                currentEvent.new_bpm((int) parserEvent.getBpm());
+            case ParserTypeEventEnum.NEW_BPM:
+                currentEvent.new_bpm(parserEvent.getBpm().getValue());
                 break;
-            case TypeEventParser.NEW_INSTRUMENT:
-                currentEvent.new_instrument(parserEvent.getInstrument());
+            case ParserTypeEventEnum.NEW_INSTRUMENT:
+                currentEvent.new_instrument(parserEvent.getInstrument().getValue());
                 break;
-            case TypeEventParser.SILENCE:
-                currentEvent.new_silence(parserEvent.getDuration());
+            case ParserTypeEventEnum.SILENCE:
+                currentEvent.new_silence(parserEvent.getDuration().getValue());
                 break;
-            case TypeEventParser.NEW_NOTE:
-                currentEvent.new_note( parserEvent.getAbsoluteNote(),(int) parserEvent.getVolume(), parserEvent.getDuration());
+            case ParserTypeEventEnum.NEW_NOTE:
+                currentEvent.new_note( parserEvent.getAbsoluteNote(), parserEvent.getVolume().getValue(), parserEvent.getDuration().getValue());
                 break;
 
 
-            case TypeEventParser.GENERIC:
+            case ParserTypeEventEnum.GENERIC:
             default:
                 currentEvent = null;
                 break;
