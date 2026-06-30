@@ -124,16 +124,16 @@ public class MusicBox {
         List<MusicEvent> test_events = new LinkedList<>();
         MusicEvent bpm = new MusicEvent();
         bpm.new_bpm(random_correct_number());
-        //test_events.add(bpm);
-        //System.out.println("Initial BPM:" + bpm.get_bpm());
+        test_events.add(bpm);
+        System.out.println("Initial BPM:" + bpm.get_bpm());
         MusicEvent first_instrument = new MusicEvent();
         first_instrument.new_instrument(random_correct_number());
-        //System.out.println("Initial instrument:" + first_instrument.get_instrument());
-        //test_events.add(first_instrument);
+        System.out.println("Initial instrument:" + first_instrument.get_instrument());
+        test_events.add(first_instrument);
         test_ending(test_events);
         write_line(test_events, 0);
         play();
-        save(TEST_SAVE/*, null*/);
+        save(TEST_SAVE);
     }
     private int random_correct_number(){
         Random number_gen = new Random();
